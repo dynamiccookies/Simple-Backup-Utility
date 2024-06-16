@@ -53,37 +53,58 @@ function get_backup_folders($dir) {
     return $backup_folders;
 }
 
+function delete_backup_folder($folder) {
+    if (!is_dir($folder)) {
+        return false;
+    }
+    $files = array_diff(scandir($folder), array('.', '..'));
+    foreach ($files as $file) {
+        $path = "$folder/$file";
+        is_dir($path) ? delete_backup_folder($path) : unlink($path);
+    }
+    return rmdir($folder);
+}
+
 $message = '';
 $messageColor = "#dc3545";
 $current_dir = getcwd(); // Get current directory
 $folders = get_sibling_folders($current_dir); // Get sibling folder names excluding current directory
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $input_name = preg_replace('/\s+/', '-', trim($_POST['folder_name'])); // Replace spaces with dashes
-    
-    if (isset($_POST['backup']) && in_array($_POST['backup'], $folders)) {
-        $source = "../{$_POST['backup']}";
-    } else {
-        $message = 'Invalid backup folder selected.';
-    }
-
-    if (empty($message)) {
-        $folder_name = $_POST['backup'] . '_' . $input_name;
-        $destination = "../" . basename($current_dir) . "/" . $folder_name;
-
-        if (is_dir($destination)) {
-            $message = "The folder '$folder_name' already exists. Backup cannot be completed.";
+    if (isset($_POST['delete'])) {
+        $folder_to_delete = $current_dir . '/' . $_POST['delete'];
+        if (delete_backup_folder($folder_to_delete)) {
+            $message = "The folder '{$_POST['delete']}' has been deleted.";
+            $messageColor = "#28a745";
         } else {
-            $file_count = backup_folder($source, $destination);
-            if ($file_count > 0) {
-                $message = "The folder '$folder_name' has been created with $file_count files.";
-                $messageColor = "#28a745";
+            $message = "Failed to delete the folder '{$_POST['delete']}'.";
+        }
+    } else {
+        $input_name = preg_replace('/\s+/', '-', trim($_POST['folder_name'])); // Replace spaces with dashes
+        
+        if (isset($_POST['backup']) && in_array($_POST['backup'], $folders)) {
+            $source = "../{$_POST['backup']}";
+        } else {
+            $message = 'Invalid backup folder selected.';
+        }
+
+        if (empty($message)) {
+            $folder_name = $_POST['backup'] . '_' . $input_name;
+            $destination = "../" . basename($current_dir) . "/" . $folder_name;
+
+            if (is_dir($destination)) {
+                $message = "The folder '$folder_name' already exists. Backup cannot be completed.";
             } else {
-                $message = "Failed to create the folder '$folder_name'.";
+                $file_count = backup_folder($source, $destination);
+                if ($file_count > 0) {
+                    $message = "The folder '$folder_name' has been created with $file_count files.";
+                    $messageColor = "#28a745";
+                } else {
+                    $message = "Failed to create the folder '$folder_name'.";
+                }
             }
         }
     }
-
 }
 
 $backup_folders = get_backup_folders($current_dir);
@@ -94,6 +115,7 @@ $backup_folders = get_backup_folders($current_dir);
 <head>
     <meta charset="UTF-8">
     <title>Backup Utility</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
             background-color: #000;
@@ -162,8 +184,6 @@ $backup_folders = get_backup_folders($current_dir);
         table th, table td {
             border: 1px solid #fff;
             padding: 10px;
-            color: #000;
-            width: 50%;
         }
         table th {
             background-color: #007bff;
@@ -175,9 +195,28 @@ $backup_folders = get_backup_folders($current_dir);
         table tr:nth-child(odd) {
             background-color: #e9ecef;
         }
+        table th:nth-child(1), table td:nth-child(1) {
+            width: 45%;
+        }
+        table th:nth-child(2), table td:nth-child(2) {
+            width: 45%;
+        }
+        table th:nth-child(3), table td:nth-child(3) {
+            width: 10%;
+        }
         .divider {
             border-top: 1px solid #fff;
             margin: 20px 0;
+        }
+        .trash-icon {
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #dc3545;
+            font-size: 16px;
+        }
+        .trash-icon:hover {
+            color: #c82333;
         }
     </style>
 </head>
@@ -203,11 +242,19 @@ $backup_folders = get_backup_folders($current_dir);
             <tr>
                 <th>Backup</th>
                 <th>Created Date (CST)</th>
+                <th>Delete</th>
             </tr>
             <?php foreach ($backup_folders as $index => $folder): ?>
                 <tr style="background-color: <?php echo $index % 2 == 0 ? '#e9ecef' : '#f0f0f0'; ?>">
                     <td><?php echo htmlspecialchars($folder['name']); ?></td>
                     <td><?php echo htmlspecialchars($folder['created_date']); ?></td>
+                    <td>
+                        <form method="POST" style="display:inline;">
+                            <button type="submit" name="delete" value="<?php echo htmlspecialchars($folder['name']); ?>" class="trash-icon">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </table>

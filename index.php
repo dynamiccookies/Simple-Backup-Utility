@@ -184,6 +184,7 @@ $backup_folders = get_backup_folders($current_dir);
         table th, table td {
             border: 1px solid #fff;
             padding: 10px;
+            color: #000;
         }
         table th {
             background-color: #007bff;

@@ -170,6 +170,10 @@ $random_color = $colors[array_rand($colors)];
             gap: 10px;
             margin-bottom: 20px;
         }
+        .button-container button {
+            box-shadow: 0 8px 8px 1px rgba(0, 0, 0, .2);
+            font-weight: bold;
+        }
         button {
             padding: 10px 20px;
             font-size: 16px;

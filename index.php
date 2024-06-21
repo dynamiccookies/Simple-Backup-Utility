@@ -209,10 +209,10 @@ $random_color = $colors[array_rand($colors)];
             color: #fff;
         }
         table tr:nth-child(even) {
-            background-color: #f0f0f0;
+            background-color: snow;
         }
         table tr:nth-child(odd) {
-            background-color: #e9ecef;
+            background-color: lightgray;
         }
         table th:nth-child(1), table th:nth-child(2),
         table td:nth-child(1), table td:nth-child(2) {
@@ -262,7 +262,7 @@ $random_color = $colors[array_rand($colors)];
                 <th>Delete</th>
             </tr>
             <?php foreach ($backup_folders as $index => $folder): ?>
-                <tr style="background-color: <?php echo $index % 2 == 0 ? '#e9ecef' : '#f0f0f0'; ?>">
+                <tr>
                     <td><?php echo htmlspecialchars($folder['name']); ?></td>
                     <td><?php echo htmlspecialchars($folder['created_date']); ?></td>
                     <td>

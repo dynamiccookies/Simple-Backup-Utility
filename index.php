@@ -108,6 +108,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $backup_folders = get_backup_folders($current_dir);
+
+// Array of colors
+$colors = [
+    "blue", "blueviolet", "brown", "cadetblue", "chocolate", "crimson", "darkblue", 
+    "darkcyan", "darkgray", "darkgreen", "darkmagenta", "darkolivegreen", "darkorchid", 
+    "darkred", "darkslateblue", "darkslategray", "darkviolet", "deeppink", "dimgray", 
+    "firebrick", "forestgreen", "gray", "green", "indianred", "magenta", "maroon", 
+    "mediumblue", "mediumvioletred", "midnightblue", "navy", "orangered", "palevioletred", 
+    "peru", "purple", "rebeccapurple", "red", "seagreen", "sienna", "slategray", "steelblue", 
+    "teal", "tomato"
+];
+
+// Randomly select a color
+$random_color = $colors[array_rand($colors)];
 ?>
 
 <!DOCTYPE html>
@@ -129,7 +143,7 @@ $backup_folders = get_backup_folders($current_dir);
             padding: 20px;
             border: 2px solid #fff;
             border-radius: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: <?php echo $random_color; ?>;
         }
         h1, h2 {
             color: #fff;
@@ -196,7 +210,8 @@ $backup_folders = get_backup_folders($current_dir);
         table tr:nth-child(odd) {
             background-color: #e9ecef;
         }
-        table th:nth-child(1), table th:nth-child(2), table td:nth-child(1), table td:nth-child(2) {
+        table th:nth-child(1), table th:nth-child(2),
+        table td:nth-child(1), table td:nth-child(2) {
             width: 45%;
         }
         table th:nth-child(3), table td:nth-child(3) {

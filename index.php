@@ -170,7 +170,7 @@ $random_color = $colors[array_rand($colors)];
             gap: 10px;
             margin-bottom: 20px;
         }
-        .button-container button {
+        .button-container button, .message {
             box-shadow: 0 8px 8px 1px rgba(0, 0, 0, .2);
             font-weight: bold;
         }

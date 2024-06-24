@@ -65,10 +65,49 @@ function delete_backup_folder($folder) {
     return rmdir($folder);
 }
 
-$message = '';
-$messageColor = "#dc3545";
-$current_dir = getcwd(); // Get current directory
-$folders = get_sibling_folders($current_dir); // Get sibling folder names excluding current directory
+// Function to get the latest release tag_name from GitHub
+function getLatestReleaseTag($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'dynamiccookies/Simple-Backup-Utility');
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    $releases = json_decode($response, true);
+    return isset($releases[0]['tag_name']) ? $releases[0]['tag_name'] : '';
+}
+
+// Function to compare versions
+function compareVersions($currentVersion, $latestVersion) {
+    // Remove 'v' prefix for comparison
+    $currentVersionClean = ltrim($currentVersion, 'v');
+    $latestVersionClean  = ltrim($latestVersion, 'v');
+    
+    // Compare versions and switch on the result
+    switch (version_compare($currentVersionClean, $latestVersionClean)) {
+        case -1:
+            return "New version <a href='https://github.com/dynamiccookies/Simple-Backup-Utility/releases/tag/$latestVersion' target='_blank'>$latestVersion</a> available!";
+        case 0:
+            return $currentVersion;
+        case 1:
+            return "BETA RELEASE $currentVersion INSTALLED";
+        default:
+            return 'Error: Unable to determine version status.';
+    }
+}
+
+// Define the current version constant
+define('CURRENT_VERSION', 'v0.1.3');
+
+// Define variables
+$apiUrl         = 'https://api.github.com/repos/dynamiccookies/Simple-Backup-Utility/releases';
+$current_dir    = getcwd(); // Get current directory
+$folders        = get_sibling_folders($current_dir); // Get sibling folder names excluding current directory
+$latestVersion  = getLatestReleaseTag($apiUrl);
+$message        = '';
+$messageColor   = "#dc3545";
+$versionMessage = compareVersions(CURRENT_VERSION, $latestVersion);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete'])) {
@@ -235,6 +274,12 @@ $random_color = $colors[array_rand($colors)];
         .trash-icon:hover {
             color: #c82333;
         }
+        .version-info {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            margin: 20px;
+        }
     </style>
 </head>
 <body>
@@ -276,5 +321,6 @@ $random_color = $colors[array_rand($colors)];
             <?php endforeach; ?>
         </table>
     </div>
+<div class="version-info"><p><?php echo $versionMessage; ?></p></div>
 </body>
 </html>

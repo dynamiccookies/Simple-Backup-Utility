@@ -91,14 +91,12 @@ function compareVersions($currentVersion, $latestVersion) {
         case 0:
             return $currentVersion;
         case 1:
-            return "BETA RELEASE $currentVersion INSTALLED";
-        default:
-            return 'Error: Unable to determine version status.';
+            return "BETA-$currentVersion INSTALLED";
     }
 }
 
 // Define the current version constant
-define('CURRENT_VERSION', 'v0.1.3');
+define('CURRENT_VERSION', 'v0.1.4');
 
 // Define variables
 $apiUrl         = 'https://api.github.com/repos/dynamiccookies/Simple-Backup-Utility/releases';
@@ -278,8 +276,13 @@ $random_color = $colors[array_rand($colors)];
             position: fixed;
             bottom: 0;
             right: 0;
-            margin: 20px;
+            margin: 10px;
+            font-size: small;
         }
+		.version-info a {
+			color: yellow;
+			font-weight: bold;
+		}
     </style>
 </head>
 <body>
@@ -321,6 +324,6 @@ $random_color = $colors[array_rand($colors)];
             <?php endforeach; ?>
         </table>
     </div>
-<div class="version-info"><p><?php echo $versionMessage; ?></p></div>
+<div class="version-info"><?php echo $versionMessage; ?></div>
 </body>
 </html>

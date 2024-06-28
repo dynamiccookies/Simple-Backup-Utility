@@ -96,7 +96,7 @@ function compareVersions($currentVersion, $latestVersion) {
 }
 
 // Define the current version constant
-define('CURRENT_VERSION', 'v0.1.4');
+define('CURRENT_VERSION', 'v0.1.5');
 
 // Define variables
 $apiUrl         = 'https://api.github.com/repos/dynamiccookies/Simple-Backup-Utility/releases';
@@ -262,6 +262,9 @@ $random_color = $colors[array_rand($colors)];
             border-top: 1px solid #fff;
             margin: 20px 0;
         }
+        .inline-form {
+            display: inline;
+        }
         .trash-icon {
             cursor: pointer;
             background: none;
@@ -284,6 +287,13 @@ $random_color = $colors[array_rand($colors)];
 			font-weight: bold;
 		}
     </style>
+    <script>
+        function confirmDelete(folderName, formId) {
+            if (confirm(`Are you sure you want to delete the folder "${folderName}"?`)) {
+                document.getElementById(formId).submit();
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -314,8 +324,9 @@ $random_color = $colors[array_rand($colors)];
                     <td><?php echo htmlspecialchars($folder['name']); ?></td>
                     <td><?php echo htmlspecialchars($folder['created_date']); ?></td>
                     <td>
-                        <form method="POST" style="display:inline;">
-                            <button type="submit" name="delete" value="<?php echo htmlspecialchars($folder['name']); ?>" class="trash-icon">
+                        <form method="POST" class="inline-form" id="delete-form-<?php echo $index; ?>">
+                            <input type="hidden" name="delete" value="<?php echo htmlspecialchars($folder['name']); ?>">
+                            <button type="button" class="trash-icon" onclick="confirmDelete('<?php echo htmlspecialchars($folder['name']); ?>', 'delete-form-<?php echo $index; ?>')">
                                 <i class="fa fa-trash"></i>
                             </button>
                         </form>

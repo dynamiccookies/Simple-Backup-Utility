@@ -207,15 +207,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
                 // Define the destination folder name and path
                 $folder_name = $selected_folder . '_' . preg_replace('/\s+/', '-', trim($_POST['folder_name']));
-                $destination = "../" . basename($current_dir) . "/" . $folder_name;
     
                 // Check if the destination folder already exists
-                if (is_dir($destination)) {
+                if (is_dir($folder_name)) {
                     // Set error message if the destination folder already exists
                     $message .= "The folder '$folder_name' already exists. Backup cannot be completed.<br>";
                 } else {
                     // Perform the backup operation
-                    $file_count = backup_folder($source, $destination);
+                    $file_count = backup_folder($source, $folder_name);
                     
                     // Check if files are successfully backed up
                     if ($file_count > 0) {

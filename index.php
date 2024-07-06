@@ -71,7 +71,8 @@ function compare_versions($currentVersion, $latestVersion) {
     // Compare versions and switch on the result
     switch (version_compare($currentVersionClean, $latestVersionClean)) {
         case -1:
-            return "New version <a href='https://github.com/dynamiccookies/Simple-Backup-Utility/releases/tag/$latestVersion' target='_blank'>$latestVersion</a> available!";
+            $releaseUrl = 'https://github.com/dynamiccookies/Simple-Backup-Utility/releases/tag/$latestVersion';
+            return "New version <a href='$releaseUrl' target='_blank'>$latestVersion</a> available! (<a href='#' onclick='triggerUpdate(); return false;'>Update Now</a>)";
         case 0:
             return $currentVersion;
         case 1:
@@ -162,7 +163,7 @@ function get_sibling_folders($dir) {
 }
 
 // ****************************************************************************************
-// * Handle POST requests for folder deletion and backup creation
+// * Handle POST requests for backup creation, folder deletion, and updating application
 // ****************************************************************************************
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -180,11 +181,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Set error message if deletion fails
             $message = "Failed to delete the folder '{$_POST['delete']}'.";
         }
-    // Process backup creation if 'delete' action is not requested
-    } else {
+
+    // Check if an update action is requested
+    } elseif (isset($_POST['update'])) {
+
+        // Fetch release information from GitHub API
+        $releaseInfo = file_get_contents($apiUrl, false, stream_context_create(['http' => ['method' => 'GET','header' => 'User-Agent: PHP']]));
+
+        // Download the release and save the zip file to disk
+        file_put_contents(basename(__FILE__), file_get_contents(json_decode($releaseInfo, true)[0]['assets'][0]['browser_download_url']));
+
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
+
+    // Check if a backup action is requested
+    } elseif (isset($_POST['backup'])) {
         
         // Check if a valid backup folder is selected
-        if (isset($_POST['backup']) && in_array($_POST['backup'], $folders)) {
+        if (in_array($_POST['backup'], $folders)) {
             // Define the source path for backup
             $source = "../{$_POST['backup']}";
         } else {
@@ -218,6 +232,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
+    } else {
+        $message = 'How did you get here?';
     }
 }
 
@@ -355,6 +371,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (confirm(`Are you sure you want to delete the folder "${folderName}"?`)) {
                 document.getElementById(formId).submit();
             }
+        }
+
+        function triggerUpdate() {
+            const form = document.createElement('form');
+            form.method = 'post';
+            form.action = '.';
+
+            const updateInput = document.createElement('input');
+            updateInput.type = 'hidden';
+            updateInput.name = 'update';
+            updateInput.value = 'true';
+
+            form.appendChild(updateInput);
+            document.body.appendChild(form);
+            form.submit();
         }
     </script>
 </head>

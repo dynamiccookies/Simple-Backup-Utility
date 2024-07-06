@@ -165,6 +165,7 @@ function get_sibling_folders($dir) {
 // * Handle POST requests for folder deletion and backup creation
 // ****************************************************************************************
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     // Check if a delete action is requested
     if (isset($_POST['delete'])) {
         // Construct the path to the folder to delete
@@ -196,6 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Proceed if no error message is set
         if (empty($message)) {
+
             // Define the destination folder name and path
             $folder_name = $_POST['backup'] . '_' . $input_name;
             $destination = "../" . basename($current_dir) . "/" . $folder_name;
@@ -345,13 +347,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin: 10px;
             font-size: small;
         }
-		.version-info a {
-			color: yellow;
-			font-weight: bold;
-		}
+        .version-info a {
+            color: yellow;
+            font-weight: bold;
+        }
     </style>
     <script>
-	    // Function to confirm folder deletion and submit the form
+        // Function to confirm folder deletion and submit the form
         function confirmDelete(folderName, formId) {
             if (confirm(`Are you sure you want to delete the folder "${folderName}"?`)) {
                 document.getElementById(formId).submit();

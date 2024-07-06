@@ -4,7 +4,7 @@
 // * Define constant for the current version
 // ****************************************************************************************
 date_default_timezone_set('America/Chicago');
-define('CURRENT_VERSION', 'v0.1.6');
+define('CURRENT_VERSION', 'v0.2.0');
 
 // ****************************************************************************************
 // * Define variables for API URL, directories, and other data

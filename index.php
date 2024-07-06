@@ -183,9 +183,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Process backup creation if 'delete' action is not requested
     } else {
         
-        // Sanitize and prepare the backup folder name
-        $input_name = preg_replace('/\s+/', '-', trim($_POST['folder_name'])); // Replace spaces with dashes
-        
         // Check if a valid backup folder is selected
         if (isset($_POST['backup']) && in_array($_POST['backup'], $folders)) {
             // Define the source path for backup
@@ -199,7 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($message)) {
 
             // Define the destination folder name and path
-            $folder_name = $_POST['backup'] . '_' . $input_name;
+            $folder_name = $_POST['backup'] . '_' . preg_replace('/\s+/', '-', trim($_POST['folder_name']));
             $destination = "../" . basename($current_dir) . "/" . $folder_name;
 
             // Check if the destination folder already exists

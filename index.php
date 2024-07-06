@@ -4,7 +4,7 @@
 // * Define constant for the current version
 // ****************************************************************************************
 date_default_timezone_set('America/Chicago');
-define('CURRENT_VERSION', 'v0.2.0');
+define('CURRENT_VERSION', 'v0.2.1');
 
 // ****************************************************************************************
 // * Define variables for API URL, directories, and other data
@@ -16,7 +16,6 @@ $latestVersion  = get_latest_release_tag($apiUrl);
 $message        = '';
 $messageColor   = "#dc3545";
 $versionMessage = compare_versions(CURRENT_VERSION, $latestVersion);
-$backup_folders = get_backup_folders($current_dir);
 $colors         = [
     "blue", "blueviolet", "brown", "cadetblue", "chocolate", "crimson", "darkblue", 
     "darkcyan", "darkgray", "darkgreen", "darkmagenta", "darkolivegreen", "darkorchid", 
@@ -422,7 +421,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <th>Created Date (CST)</th>
                 <th>Delete</th>
             </tr>
-            <?php foreach ($backup_folders as $index => $folder): ?>
+            <?php 
+                $backup_folders = get_backup_folders($current_dir);
+                foreach ($backup_folders as $index => $folder): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($folder['name']); ?></td>
                     <td><?php echo htmlspecialchars($folder['created_date']); ?></td>

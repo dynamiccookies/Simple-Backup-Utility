@@ -10,8 +10,10 @@ Simple Backup Utility is a PHP script that allows you to create and manage backu
 ## Features
 
 - **Backup Creation**: Easily create backups of specific folders.
+- **Multiple Folder Backup**: Select and backup multiple folders simultaneously.
 - **Backup Deletion**: Remove existing backup folders.
 - **User-Friendly Interface**: Intuitive web interface for straightforward operation.
+- **Easy Update**: Built-in update feature for seamless updates to the latest version.
 
 ## Requirements
 
@@ -20,7 +22,7 @@ Simple Backup Utility is a PHP script that allows you to create and manage backu
 
 ## Installation
 
-1. Clone the repository or download the ZIP file.
+1. Clone the repository or download the [latest release](https://github.com/dynamiccookies/Simple-Backup-Utility/releases/latest).
 2. Place the script (`index.php`) in the directory where you want to manage backups.
 3. Ensure the directory has appropriate permissions for creating and deleting files and folders.
 
@@ -29,17 +31,24 @@ Simple Backup Utility is a PHP script that allows you to create and manage backu
 ### Creating a Backup
 
 1. Access the script via a web browser after installation.
-2. Enter a name for your backup in the "Backup Name" field.
-3. Click the "Backup" button for the environment folder you want to backup.
+2. Enter a name for your backup(s) in the "Backup Name" field.
+3. Place a checkmark next to each of the folders you'd like to backup.
+4. Click the "Backup Selected Folders" button.
 
 ### Deleting a Backup
 
 1. Click the trash icon next to the Existing Backups entry.
 
+### Updating to Latest Version
+
+Only available if you see the New Version Available message in the bottom right corner of the screen.
+
+1. Click the (Update Now) link in the New Version Available message.
+2. When the page reloads, the new version number should be shown.
 
 ## Folder Structure
 
-The Simple Backup Utility expects the following directory structure:
+The Simple Backup Utility expects the following parent/child directory structure:
 - Project Directory
   - prod
   - staging
@@ -56,7 +65,7 @@ The script displays all of its parent directory's sibling folders. In this examp
 
 The backup process names the selected directory using the format `<source folder>_<backup-name>` based on the selected directory to backup.
 
-**Note:** The names of all files and folders are arbitrary and can be customized as needed.
+**Note:** The names of all files and folders are arbitrary and can be customized as needed, including `index.php`.
 
 
 ## License
@@ -65,4 +74,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-For any issues, questions, or feature requests, please [open an issue](https://github.com/dynamiccookies/Simple-Backup-Utility/issues).
+For any issues, questions, or feature requests, please [open an issue](https://github.com/dynamiccookies/Simple-Backup-Utility/issues/new).

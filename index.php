@@ -440,6 +440,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Horizontal divider line -->
         <div class="divider"></div>
 
+        <?php
+            $backup_folders = get_backup_folders($current_dir);
+            
+            if (empty($backup_folders)) {
+                echo '<h2>No Backups Found</h2>';
+            } else {
+        ?>
+
         <h2>Existing Backups</h2>
 
         <!-- Table displaying existing backups -->
@@ -450,7 +458,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <th>Delete</th>
             </tr>
             <?php 
-                $backup_folders = get_backup_folders($current_dir);
                 foreach ($backup_folders as $index => $folder): 
             ?><tr>
                 <td><?php echo htmlspecialchars($folder['name']); ?></td>
@@ -467,6 +474,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endforeach; ?>
 
         </table>
+        <?php } ?>
     </div>
 
     <!-- Display version information -->

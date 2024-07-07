@@ -43,17 +43,20 @@ function backup_folder($source, $destination) {
         return 0;
     }
     @mkdir($destination, 0777, true);
+    $count = 1;
     $files = array_diff(scandir($source), array('.', '..'));
+
     foreach ($files as $file) {
         $src = "$source/$file";
         $dst = "$destination/$file";
         if (is_dir($src)) {
-            backup_folder($src, $dst);
+            $count += backup_folder($src, $dst);
         } else {
             copy($src, $dst);
+            $count ++;
         }
     }
-    return count($files);
+    return $count;
 }
 
 /**
@@ -220,11 +223,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Check if files are successfully backed up
                     if ($file_count > 0) {
                         // Set success message if backup operation is successful
-                        $message .= "The folder '$folder_name' has been created with $file_count files.<br>";
+                        $message     .= "The folder '$folder_name' has been created with " . ($file_count - 1) . " files/folders.<br>";
                         $messageColor = $green;
                     } else {
                         // Set error message if backup operation fails
-                        $message .= "Failed to create the folder '$folder_name'.<br>";
+                        $message .= "ERROR: '$folder_name' is not a valid directory!<br>";
                     }
                 }
             }

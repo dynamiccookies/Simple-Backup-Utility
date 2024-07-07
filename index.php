@@ -12,6 +12,7 @@ define('CURRENT_VERSION', 'v0.2.1');
 $apiUrl         = 'https://api.github.com/repos/dynamiccookies/Simple-Backup-Utility/releases';
 $current_dir    = getcwd(); // Get current directory
 $folders        = get_sibling_folders($current_dir); // Get sibling folder names excluding current directory
+$green          = '#28a745';
 $latestVersion  = get_latest_release_tag($apiUrl);
 $message        = '';
 $messageColor   = "#dc3545";
@@ -66,7 +67,7 @@ function compare_versions($currentVersion, $latestVersion) {
     // Remove 'v' prefix for comparison
     $currentVersionClean = ltrim($currentVersion, 'v');
     $latestVersionClean  = ltrim($latestVersion, 'v');
-    
+
     // Compare versions and switch on the result
     switch (version_compare($currentVersionClean, $latestVersionClean)) {
         case -1:
@@ -170,12 +171,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete'])) {
         // Construct the path to the folder to delete
         $folder_to_delete = $current_dir . '/' . $_POST['delete'];
-        
+
         // Attempt to delete the folder
         if (delete_backup_folder($folder_to_delete)) {
             // Set success message if deletion is successful
             $message = "The folder '{$_POST['delete']}' has been deleted.";
-            $messageColor = "#28a745"; // Green color for success message
+            $messageColor = $green;
         } else {
             // Set error message if deletion fails
             $message = "Failed to delete the folder '{$_POST['delete']}'.";
@@ -195,7 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Check if a backup action is requested
     } elseif (isset($_POST['backup'])) {
-    
+
         // Check if any folders are selected for backup
         if (!isset($_POST['backup_folders']) || empty($_POST['backup_folders'])) {
             $message = 'No folders selected for backup.';
@@ -204,10 +205,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ($_POST['backup_folders'] as $selected_folder) {
                 // Define the source path for backup
                 $source = "../" . $selected_folder;
-    
+
                 // Define the destination folder name and path
                 $folder_name = $selected_folder . '_' . preg_replace('/\s+/', '-', trim($_POST['folder_name']));
-    
+
                 // Check if the destination folder already exists
                 if (is_dir($folder_name)) {
                     // Set error message if the destination folder already exists
@@ -215,12 +216,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     // Perform the backup operation
                     $file_count = backup_folder($source, $folder_name);
-                    
+
                     // Check if files are successfully backed up
                     if ($file_count > 0) {
                         // Set success message if backup operation is successful
                         $message .= "The folder '$folder_name' has been created with $file_count files.<br>";
-                        $messageColor = "#28a745"; // Green color for success message
+                        $messageColor = $green;
                     } else {
                         // Set error message if backup operation fails
                         $message .= "Failed to create the folder '$folder_name'.<br>";
@@ -407,7 +408,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $total_folders = count($folders);
                 $max_columns = 4; // Maximum number of columns
                 $columns = min($max_columns, max(1, ceil($total_folders / 2))); // Adjust columns dynamically based on folder count
-                
+
                 // Calculate number of folders per column
                 $folders_per_column = ceil($total_folders / $columns);
                 for ($i = 0; $i < $columns; $i++) {

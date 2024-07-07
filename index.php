@@ -4,7 +4,7 @@
 // * Define constant for the current version
 // ****************************************************************************************
 date_default_timezone_set('America/Chicago');
-define('CURRENT_VERSION', 'v0.2.1');
+define('CURRENT_VERSION', 'v0.3.0');
 
 // ****************************************************************************************
 // * Define variables for API URL, directories, and other data
@@ -12,6 +12,7 @@ define('CURRENT_VERSION', 'v0.2.1');
 $apiUrl         = 'https://api.github.com/repos/dynamiccookies/Simple-Backup-Utility/releases';
 $current_dir    = getcwd(); // Get current directory
 $folders        = get_sibling_folders($current_dir); // Get sibling folder names excluding current directory
+$green          = '#28a745';
 $latestVersion  = get_latest_release_tag($apiUrl);
 $message        = '';
 $messageColor   = "#dc3545";
@@ -42,17 +43,20 @@ function backup_folder($source, $destination) {
         return 0;
     }
     @mkdir($destination, 0777, true);
+    $count = 1;
     $files = array_diff(scandir($source), array('.', '..'));
+
     foreach ($files as $file) {
         $src = "$source/$file";
         $dst = "$destination/$file";
         if (is_dir($src)) {
-            backup_folder($src, $dst);
+            $count += backup_folder($src, $dst);
         } else {
             copy($src, $dst);
+            $count ++;
         }
     }
-    return count($files);
+    return $count;
 }
 
 /**
@@ -66,7 +70,7 @@ function compare_versions($currentVersion, $latestVersion) {
     // Remove 'v' prefix for comparison
     $currentVersionClean = ltrim($currentVersion, 'v');
     $latestVersionClean  = ltrim($latestVersion, 'v');
-    
+
     // Compare versions and switch on the result
     switch (version_compare($currentVersionClean, $latestVersionClean)) {
         case -1:
@@ -170,12 +174,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete'])) {
         // Construct the path to the folder to delete
         $folder_to_delete = $current_dir . '/' . $_POST['delete'];
-        
+
         // Attempt to delete the folder
         if (delete_backup_folder($folder_to_delete)) {
             // Set success message if deletion is successful
             $message = "The folder '{$_POST['delete']}' has been deleted.";
-            $messageColor = "#28a745"; // Green color for success message
+            $messageColor = $green;
         } else {
             // Set error message if deletion fails
             $message = "Failed to delete the folder '{$_POST['delete']}'.";
@@ -195,39 +199,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Check if a backup action is requested
     } elseif (isset($_POST['backup'])) {
-        
-        // Check if a valid backup folder is selected
-        if (in_array($_POST['backup'], $folders)) {
-            // Define the source path for backup
-            $source = "../{$_POST['backup']}";
+
+        // Check if any folders are selected for backup
+        if (!isset($_POST['backup_folders']) || empty($_POST['backup_folders'])) {
+            $message = 'No folders selected for backup.';
         } else {
-            // Set error message for invalid backup folder selection
-            $message = 'Invalid backup folder selected.';
-        }
+            // Loop through selected folders and initiate backup
+            foreach ($_POST['backup_folders'] as $selected_folder) {
+                // Define the source path for backup
+                $source = "../" . $selected_folder;
 
-        // Proceed if no error message is set
-        if (empty($message)) {
+                // Define the destination folder name and path
+                $folder_name = $selected_folder . '_' . preg_replace('/\s+/', '-', trim($_POST['folder_name']));
 
-            // Define the destination folder name and path
-            $folder_name = $_POST['backup'] . '_' . preg_replace('/\s+/', '-', trim($_POST['folder_name']));
-            $destination = "../" . basename($current_dir) . "/" . $folder_name;
-
-            // Check if the destination folder already exists
-            if (is_dir($destination)) {
-                // Set error message if the destination folder already exists
-                $message = "The folder '$folder_name' already exists. Backup cannot be completed.";
-            } else {
-                // Perform the backup operation
-                $file_count = backup_folder($source, $destination);
-                
-                // Check if files are successfully backed up
-                if ($file_count > 0) {
-                    // Set success message if backup operation is successful
-                    $message = "The folder '$folder_name' has been created with $file_count files.";
-                    $messageColor = "#28a745"; // Green color for success message
+                // Check if the destination folder already exists
+                if (is_dir($folder_name)) {
+                    // Set error message if the destination folder already exists
+                    $message .= "The folder '$folder_name' already exists. Backup cannot be completed.<br>";
                 } else {
-                    // Set error message if backup operation fails
-                    $message = "Failed to create the folder '$folder_name'.";
+                    // Perform the backup operation
+                    $file_count = backup_folder($source, $folder_name);
+
+                    // Check if files are successfully backed up
+                    if ($file_count > 0) {
+                        // Set success message if backup operation is successful
+                        $message     .= "The folder '$folder_name' has been created with " . ($file_count - 1) . " files/folders.<br>";
+                        $messageColor = $green;
+                    } else {
+                        // Set error message if backup operation fails
+                        $message .= "ERROR: '$folder_name' is not a valid directory!<br>";
+                    }
                 }
             }
         }
@@ -284,7 +285,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             gap: 10px;
             margin-bottom: 20px;
         }
-        .button-container button, .message {
+        button.backup, .message {
             box-shadow: 0 8px 8px 1px rgba(0, 0, 0, .2);
             font-weight: bold;
         }
@@ -335,6 +336,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         table th:nth-child(3), table td:nth-child(3) {
             width: 10%;
         }
+        .checkbox-columns {
+            display: flex;
+            gap: 20px;
+            text-align: left;
+        }
+        .checkbox-column label {
+            display: block;
+            white-space: nowrap;
+            margin-bottom: 5px;
+        }
         .divider {
             border-top: 1px solid #fff;
             margin: 20px 0;
@@ -372,6 +383,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
+        // Function to trigger update from GitHub repository's latest release
         function triggerUpdate() {
             const form = document.createElement('form');
             form.method = 'post';
@@ -395,22 +407,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Backup form for creating new backups -->
         <form method="POST">
             <input type="text" id="folder_name" name="folder_name" placeholder="Backup Name" required>
-            <div class="button-container">
-                <?php foreach ($folders as $folder) : ?>
-                    <button type="submit" name="backup" value="<?php echo $folder; ?>">Backup <?php echo ucfirst($folder); ?></button>
-                <?php endforeach; ?>
+            <div class="checkbox-columns"><?php 
+                $total_folders = count($folders);
+                $max_columns = 4; // Maximum number of columns
+                $columns = min($max_columns, max(1, ceil($total_folders / 2))); // Adjust columns dynamically based on folder count
+
+                // Calculate number of folders per column
+                $folders_per_column = ceil($total_folders / $columns);
+                for ($i = 0; $i < $columns; $i++) {
+                    echo "\n\t\t\t\t<div class='checkbox-column'>";
+                    for ($j = 0; $j < $folders_per_column; $j++) {
+                        $folder_index = $j * $columns + $i;
+                        if ($folder_index < $total_folders) {
+                            $folder = $folders[$folder_index];
+                            echo "\n\t\t\t\t\t" . '<label for="backup_' . $folder . '">';
+                            echo '<input type="checkbox" id="backup_' . $folder . '" name="backup_folders[]" value="' . $folder . '">';
+                            echo ucfirst($folder);
+                            echo '</label><br>';
+                        }
+                    }
+                    echo "\n\t\t\t\t</div>";
+                }
+                ?>
+
             </div>
+            <button type="submit" name="backup" class="backup">Backup Selected Folders</button>
         </form>
 
         <!-- Display message if there is any -->
-        <?php if ($message): ?>
-            <div class="message">
-                <?php echo htmlspecialchars($message); ?>
-            </div>
-        <?php endif; ?>
+        <?php if ($message) echo "<div class='message'>$message</div>"; ?>
 
         <!-- Horizontal divider line -->
         <div class="divider"></div>
+
+        <?php
+            $backup_folders = get_backup_folders($current_dir);
+            
+            if (empty($backup_folders)) {
+                echo '<h2>No Backups Found</h2>';
+            } else {
+        ?>
 
         <h2>Existing Backups</h2>
 
@@ -422,27 +458,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <th>Delete</th>
             </tr>
             <?php 
-                $backup_folders = get_backup_folders($current_dir);
-                foreach ($backup_folders as $index => $folder): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($folder['name']); ?></td>
-                    <td><?php echo htmlspecialchars($folder['created_date']); ?></td>
-                    <td>
-                        <!-- Form for deleting a backup folder -->
-                        <form method="POST" class="inline-form" id="delete-form-<?php echo $index; ?>">
-                            <input type="hidden" name="delete" value="<?php echo htmlspecialchars($folder['name']); ?>">
-                            <button type="button" class="trash-icon" onclick="confirmDelete('<?php echo htmlspecialchars($folder['name']); ?>', 'delete-form-<?php echo $index; ?>')">
-                                <i class="fa fa-trash"></i> <!-- Trash icon for delete button -->
-                            </button>
-                        </form>
-                    </td>
-                </tr>
+                foreach ($backup_folders as $index => $folder): 
+            ?><tr>
+                <td><?php echo htmlspecialchars($folder['name']); ?></td>
+                <td><?php echo htmlspecialchars($folder['created_date']); ?></td>
+                <td>
+                    <form method="POST" class="inline-form" id="delete-form-<?php echo $index; ?>">
+                        <input type="hidden" name="delete" value="<?php echo htmlspecialchars($folder['name']); ?>">
+                        <button type="button" class="trash-icon" onclick="confirmDelete('<?php echo htmlspecialchars($folder['name']); ?>', 'delete-form-<?php echo $index; ?>')">
+                            <i class="fa fa-trash"></i> <!-- Trash icon for delete button -->
+                        </button>
+                    </form>
+                </td>
+            </tr>
             <?php endforeach; ?>
+
         </table>
+        <?php } ?>
     </div>
 
-    <!-- Display version information at the bottom right corner -->
+    <!-- Display version information -->
     <div class="version-info"><?php echo $versionMessage; ?></div>
 </body>
-
 </html>

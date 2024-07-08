@@ -342,6 +342,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: flex;
             gap: 20px;
             text-align: left;
+            margin: 25px 25px 15px 25px;
         }
         .checkbox-column label {
             display: block;

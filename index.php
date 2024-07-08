@@ -308,6 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 10px;
+            transition: opacity 1s ease-out;
         }
         table {
             width: 100%;
@@ -350,6 +351,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-top: 1px solid #fff;
             margin: 20px 0;
         }
+        .fade-out {
+            opacity: 0;
+        }
         .inline-form {
             display: inline;
         }
@@ -376,6 +380,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
     <script>
+        // Hide message after 5 seconds
+        setTimeout(function() {
+            var messageDiv = document.getElementById('message');
+            messageDiv.classList.add('fade-out');
+
+            setTimeout(function() {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }, 10000);
+
         // Function to confirm folder deletion and submit the form
         function confirmDelete(folderName, formId) {
             if (confirm(`Are you sure you want to delete the folder "${folderName}"?`)) {
@@ -435,7 +449,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
 
         <!-- Display message if there is any -->
-        <?php if ($message) echo "<div class='message'>$message</div>"; ?>
+        <?php if ($message) echo "<div id='message' class='message'>$message</div>"; ?>
 
         <!-- Horizontal divider line -->
         <div class="divider"></div>

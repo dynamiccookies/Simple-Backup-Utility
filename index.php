@@ -382,7 +382,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
     <script>
-        // Hide message after 5 seconds
+        // Hide message after 10 seconds
         setTimeout(function() {
             var messageDiv = document.getElementById('message');
             messageDiv.classList.add('fade-out');

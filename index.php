@@ -309,7 +309,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 10px;
-            transition: opacity 1s ease-out;
+            transition: opacity 2s ease-out;
         }
         table {
             width: 100%;
@@ -389,7 +389,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             setTimeout(function() {
                 messageDiv.style.display = 'none';
-            }, 3000);
+            }, 2000);
         }, 10000);
 
         // Function to confirm folder deletion and submit the form

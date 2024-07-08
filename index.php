@@ -253,12 +253,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-align: center;
         }
         .container {
-            max-width: 600px;
+            max-width: 90%;
             margin: 20px auto;
             padding: 20px;
             border: 2px solid #fff;
             border-radius: 10px;
             background-color: <?php echo $random_color; ?>;
+            display: inline-block;
         }
         h1, h2 {
             color: #fff;

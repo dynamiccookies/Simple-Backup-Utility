@@ -3,7 +3,6 @@
 // * Set timezone to CST
 // * Define constant for the current version
 // ****************************************************************************************
-date_default_timezone_set('America/Chicago');
 define('CURRENT_VERSION', 'v0.3.0');
 
 // ****************************************************************************************
@@ -110,20 +109,18 @@ function delete_backup_folder($folder) {
 function get_backup_folders($dir) {
     $folders = array_filter(glob($dir . '/*'), 'is_dir');
     $backup_folders = [];
+
     foreach ($folders as $folder) {
-        $folder_name = basename($folder);
-        $created_timestamp = filectime($folder); // Raw timestamp for sorting
-        $created_date = date('m/d/y h:i:s A', $created_timestamp); // Human-readable format for display
-        
+        $created_date     = date('c', filectime($folder)); // ISO 8601 format for JavaScript conversion
         $backup_folders[] = [
-            'name' => $folder_name,
-            'created_date' => $created_date,
-            'created_timestamp' => $created_timestamp // Add timestamp for sorting
+            'name'         => basename($folder),
+            'created_date' => $created_date
         ];
     }
+
     // Sort by created_timestamp in descending order
     usort($backup_folders, function($a, $b) {
-        return $b['created_timestamp'] - $a['created_timestamp'];
+        return strtotime($b['created_date']) - strtotime($a['created_date']);
     });
     return $backup_folders;
 }
@@ -414,6 +411,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             document.body.appendChild(form);
             form.submit();
         }
+
+        // Function to convert ISO 8601 date to local timezone and format
+        function convertToLocalTime(isoDate) {
+            const date = new Date(isoDate);
+            return date.toLocaleString();
+        }
+
+        // Convert all dates in the table to local timezone
+        window.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('.created-date').forEach(element => {
+                const isoDate = element.getAttribute('data-iso-date');
+                element.textContent = convertToLocalTime(isoDate);
+            });
+        });
     </script>
 </head>
 <body>
@@ -470,14 +481,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <table>
             <tr>
                 <th>Backup</th>
-                <th>Created Date (CST)</th>
+                <th>Created Date</th>
                 <th>Delete</th>
             </tr>
             <?php 
                 foreach ($backup_folders as $index => $folder): 
             ?><tr>
                 <td><?php echo htmlspecialchars($folder['name']); ?></td>
-                <td><?php echo htmlspecialchars($folder['created_date']); ?></td>
+                <td class="created-date" data-iso-date="<?php echo $folder['created_date']; ?>"><?php echo $folder['created_date']; ?></td>
                 <td>
                     <form method="POST" class="inline-form" id="delete-form-<?php echo $index; ?>">
                         <input type="hidden" name="delete" value="<?php echo htmlspecialchars($folder['name']); ?>">

@@ -317,6 +317,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: 1px solid #fff;
             padding: 10px;
             color: #000;
+            white-space: nowrap;
         }
         table th {
             background-color: #007bff;
@@ -328,11 +329,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         table tr:nth-child(odd) {
             background-color: lightgray;
         }
-        table th:nth-child(1), table th:nth-child(2),
-        table td:nth-child(1), table td:nth-child(2) {
-            width: 45%;
+        table th:nth-child(1), table th:nth-child(2), table th:nth-child(3),
+        table td:nth-child(1), table td:nth-child(2), table td:nth-child(3) {
+            width: 30%;
         }
-        table th:nth-child(3), table td:nth-child(3) {
+        table th:nth-child(4), table td:nth-child(4) {
             width: 10%;
         }
         .checkbox-columns {
@@ -480,14 +481,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Table displaying existing backups -->
         <table>
             <tr>
-                <th>Backup</th>
+                <th>Backup Folder</th>
+                <th>Description</th>
                 <th>Created Date</th>
                 <th>Delete</th>
             </tr>
             <?php 
                 foreach ($backup_folders as $index => $folder): 
             ?><tr>
-                <td><?php echo htmlspecialchars($folder['name']); ?></td>
+                <td><?php echo htmlspecialchars(explode('_', $folder['name'], 2)[0]); ?></td>
+                <td><?php echo htmlspecialchars(explode('_', $folder['name'], 2)[1]); ?></td>
                 <td class="created-date" data-iso-date="<?php echo $folder['created_date']; ?>"><?php echo $folder['created_date']; ?></td>
                 <td>
                     <form method="POST" class="inline-form" id="delete-form-<?php echo $index; ?>">

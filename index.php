@@ -415,7 +415,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Function to convert ISO 8601 date to local timezone and format
         function convertToLocalTime(isoDate) {
             const date = new Date(isoDate);
-            return date.toLocaleString();
+            return date.toLocaleString().replace(',', '');
         }
 
         // Convert all dates in the table to local timezone

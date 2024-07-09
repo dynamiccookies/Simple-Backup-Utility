@@ -380,6 +380,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
     <script>
+        // Set container's min-width based on the content's width
+        document.addEventListener("DOMContentLoaded", function() {
+
+            // Select the container element
+            var container = document.querySelector(".container");
+
+            // Set the initial width of the container
+            updateContainerWidth();
+
+            // Listen for window resize events to adjust the width
+            window.addEventListener("resize", updateContainerWidth);
+
+            // Update the container's min-width based on its scrollWidth.
+            function updateContainerWidth() {
+                if (container.clientWidth + 22 < container.scrollWidth + 20) {
+                    container.style.minWidth = container.scrollWidth + "px";
+                }
+            }
+        });
+
         // Hide message after 10 seconds
         setTimeout(function() {
             var messageDiv = document.getElementById('message');

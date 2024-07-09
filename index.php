@@ -383,11 +383,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Hide message after 10 seconds
         setTimeout(function() {
             var messageDiv = document.getElementById('message');
-            messageDiv.classList.add('fade-out');
-
-            setTimeout(function() {
-                messageDiv.style.display = 'none';
-            }, 2000);
+            if (messageDiv) {
+                messageDiv.classList.add('fade-out');
+                setTimeout(function() {
+                    messageDiv.style.display = 'none';
+                }, 2000);
+            }
         }, 10000);
 
         // Function to confirm folder deletion and submit the form

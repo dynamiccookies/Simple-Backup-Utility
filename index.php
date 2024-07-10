@@ -394,7 +394,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Update the container's min-width based on its scrollWidth.
             function updateContainerWidth() {
-                if (container.clientWidth + 22 < container.scrollWidth + 20) {
+                if (container.clientWidth + 42 < container.scrollWidth + 40) {
                     container.style.minWidth = container.scrollWidth + "px";
                 }
             }

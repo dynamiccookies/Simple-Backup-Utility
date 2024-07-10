@@ -459,21 +459,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="checkbox-columns"><?php
                 $total_folders = count($folders);
                 $max_columns = 4; // Maximum number of columns
-                $columns = min($max_columns, max(1, ceil($total_folders / 2))); // Adjust columns dynamically based on folder count
-
-                // Calculate number of folders per column
-                $folders_per_column = ceil($total_folders / $columns);
+                $columns = min($max_columns, $total_folders); // Adjust columns dynamically based on folder count
+            
+                // Print columns
                 for ($i = 0; $i < $columns; $i++) {
                     echo "\n\t\t\t\t<div class='checkbox-column'>";
                     for ($j = 0; $j < $folders_per_column; $j++) {
-                        $folder_index = $j * $columns + $i;
-                        if ($folder_index < $total_folders) {
-                            $folder = $folders[$folder_index];
-                            echo "\n\t\t\t\t\t" . '<label for="backup_' . $folder . '">';
-                            echo '<input type="checkbox" id="backup_' . $folder . '" name="backup_folders[]" value="' . $folder . '">';
-                            echo ucfirst($folder);
-                            echo '</label><br>';
-                        }
+                    for ($j = $i; $j < $total_folders; $j += $columns) {
+                        $folder = $folders[$j];
+                        echo "\n\t\t\t\t\t" . '<label for="backup_' . $folder . '">';
+                        echo '<input type="checkbox" id="backup_' . $folder . '" name="backup_folders[]" value="' . $folder . '">';
+                        echo $folder;
+                        echo '</label><br>';
                     }
                     echo "\n\t\t\t\t</div>";
                 }

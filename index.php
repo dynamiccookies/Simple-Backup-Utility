@@ -3,8 +3,7 @@
 // * Set timezone to CST
 // * Define constant for the current version
 // ****************************************************************************************
-date_default_timezone_set('America/Chicago');
-define('CURRENT_VERSION', 'v0.3.0');
+define('CURRENT_VERSION', 'v1.0.0');
 
 // ****************************************************************************************
 // * Define variables for API URL, directories, and other data
@@ -110,20 +109,18 @@ function delete_backup_folder($folder) {
 function get_backup_folders($dir) {
     $folders = array_filter(glob($dir . '/*'), 'is_dir');
     $backup_folders = [];
+
     foreach ($folders as $folder) {
-        $folder_name = basename($folder);
-        $created_timestamp = filectime($folder); // Raw timestamp for sorting
-        $created_date = date('m/d/y h:i:s A', $created_timestamp); // Human-readable format for display
-        
+        $created_date     = date('c', filectime($folder)); // ISO 8601 format for JavaScript conversion
         $backup_folders[] = [
-            'name' => $folder_name,
-            'created_date' => $created_date,
-            'created_timestamp' => $created_timestamp // Add timestamp for sorting
+            'name'         => basename($folder),
+            'created_date' => $created_date
         ];
     }
+
     // Sort by created_timestamp in descending order
     usort($backup_folders, function($a, $b) {
-        return $b['created_timestamp'] - $a['created_timestamp'];
+        return strtotime($b['created_date']) - strtotime($a['created_date']);
     });
     return $backup_folders;
 }
@@ -253,12 +250,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-align: center;
         }
         .container {
-            max-width: 600px;
+            max-width: 90%;
             margin: 20px auto;
             padding: 20px;
             border: 2px solid #fff;
             border-radius: 10px;
             background-color: <?php echo $random_color; ?>;
+            display: inline-block;
         }
         h1, h2 {
             color: #fff;
@@ -308,6 +306,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 10px;
+            transition: opacity 2s ease-out;
         }
         table {
             width: 100%;
@@ -318,6 +317,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: 1px solid #fff;
             padding: 10px;
             color: #000;
+            white-space: nowrap;
         }
         table th {
             background-color: #007bff;
@@ -329,17 +329,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         table tr:nth-child(odd) {
             background-color: lightgray;
         }
-        table th:nth-child(1), table th:nth-child(2),
-        table td:nth-child(1), table td:nth-child(2) {
-            width: 45%;
+        table th:nth-child(1), table th:nth-child(2), table th:nth-child(3),
+        table td:nth-child(1), table td:nth-child(2), table td:nth-child(3) {
+            width: 30%;
         }
-        table th:nth-child(3), table td:nth-child(3) {
+        table th:nth-child(4), table td:nth-child(4) {
             width: 10%;
         }
         .checkbox-columns {
             display: flex;
             gap: 20px;
             text-align: left;
+            margin: 25px 25px 15px 25px;
         }
         .checkbox-column label {
             display: block;
@@ -349,6 +350,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .divider {
             border-top: 1px solid #fff;
             margin: 20px 0;
+        }
+        .fade-out {
+            opacity: 0;
         }
         .inline-form {
             display: inline;
@@ -376,6 +380,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
     <script>
+        // Set container's min-width based on the content's width
+        document.addEventListener("DOMContentLoaded", function() {
+
+            // Select the container element
+            var container = document.querySelector(".container");
+
+            // Set the initial width of the container
+            updateContainerWidth();
+
+            // Listen for window resize events to adjust the width
+            window.addEventListener("resize", updateContainerWidth);
+
+            // Update the container's min-width based on its scrollWidth.
+            function updateContainerWidth() {
+                if (container.clientWidth + 42 < container.scrollWidth + 40) {
+                    container.style.minWidth = container.scrollWidth + "px";
+                }
+            }
+        });
+
+        // Hide message after 10 seconds
+        setTimeout(function() {
+            var messageDiv = document.getElementById('message');
+            if (messageDiv) {
+                messageDiv.classList.add('fade-out');
+                setTimeout(function() {
+                    messageDiv.style.display = 'none';
+                }, 2000);
+            }
+        }, 10000);
+
         // Function to confirm folder deletion and submit the form
         function confirmDelete(folderName, formId) {
             if (confirm(`Are you sure you want to delete the folder "${folderName}"?`)) {
@@ -398,6 +433,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             document.body.appendChild(form);
             form.submit();
         }
+
+        // Function to convert ISO 8601 date to local timezone and format
+        function convertToLocalTime(isoDate) {
+            const date = new Date(isoDate);
+            return date.toLocaleString().replace(',', '');
+        }
+
+        // Convert all dates in the table to local timezone
+        window.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('.created-date').forEach(element => {
+                const isoDate = element.getAttribute('data-iso-date');
+                element.textContent = convertToLocalTime(isoDate);
+            });
+        });
     </script>
 </head>
 <body>
@@ -407,7 +456,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Backup form for creating new backups -->
         <form method="POST">
             <input type="text" id="folder_name" name="folder_name" placeholder="Backup Name" required>
-            <div class="checkbox-columns"><?php 
+            <div class="checkbox-columns"><?php
                 $total_folders = count($folders);
                 $max_columns = 4; // Maximum number of columns
                 $columns = min($max_columns, max(1, ceil($total_folders / 2))); // Adjust columns dynamically based on folder count
@@ -435,14 +484,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
 
         <!-- Display message if there is any -->
-        <?php if ($message) echo "<div class='message'>$message</div>"; ?>
+        <?php if ($message) echo "<div id='message' class='message'>$message</div>"; ?>
 
         <!-- Horizontal divider line -->
         <div class="divider"></div>
 
         <?php
             $backup_folders = get_backup_folders($current_dir);
-            
+
             if (empty($backup_folders)) {
                 echo '<h2>No Backups Found</h2>';
             } else {
@@ -453,15 +502,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Table displaying existing backups -->
         <table>
             <tr>
-                <th>Backup</th>
-                <th>Created Date (CST)</th>
+                <th>Backup Folder</th>
+                <th>Description</th>
+                <th>Created Date</th>
                 <th>Delete</th>
             </tr>
-            <?php 
-                foreach ($backup_folders as $index => $folder): 
+            <?php
+                foreach ($backup_folders as $index => $folder):
             ?><tr>
-                <td><?php echo htmlspecialchars($folder['name']); ?></td>
-                <td><?php echo htmlspecialchars($folder['created_date']); ?></td>
+                <td><?php echo htmlspecialchars(explode('_', $folder['name'], 2)[0]); ?></td>
+                <td><?php echo htmlspecialchars(explode('_', $folder['name'], 2)[1]); ?></td>
+                <td class="created-date" data-iso-date="<?php echo $folder['created_date']; ?>"><?php echo $folder['created_date']; ?></td>
                 <td>
                     <form method="POST" class="inline-form" id="delete-form-<?php echo $index; ?>">
                         <input type="hidden" name="delete" value="<?php echo htmlspecialchars($folder['name']); ?>">

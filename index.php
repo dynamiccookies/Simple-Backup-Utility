@@ -456,7 +456,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Backup form for creating new backups -->
         <form method="POST">
             <input type="text" id="folder_name" name="folder_name" placeholder="Backup Name" required>
-            <div class="checkbox-columns"><?php 
+            <div class="checkbox-columns"><?php
                 $total_folders = count($folders);
                 $max_columns = 4; // Maximum number of columns
                 $columns = min($max_columns, max(1, ceil($total_folders / 2))); // Adjust columns dynamically based on folder count
@@ -491,7 +491,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <?php
             $backup_folders = get_backup_folders($current_dir);
-            
+
             if (empty($backup_folders)) {
                 echo '<h2>No Backups Found</h2>';
             } else {
@@ -507,8 +507,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <th>Created Date</th>
                 <th>Delete</th>
             </tr>
-            <?php 
-                foreach ($backup_folders as $index => $folder): 
+            <?php
+                foreach ($backup_folders as $index => $folder):
             ?><tr>
                 <td><?php echo htmlspecialchars(explode('_', $folder['name'], 2)[0]); ?></td>
                 <td><?php echo htmlspecialchars(explode('_', $folder['name'], 2)[1]); ?></td>

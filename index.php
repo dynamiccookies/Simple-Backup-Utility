@@ -159,6 +159,11 @@ function get_sibling_folders($dir) {
             $sibling_folders[] = $folder_name;
         }
     }
+
+    usort($sibling_folders, function($a, $b) {
+        return strcasecmp($a, $b);
+    });
+
     return $sibling_folders;
 }
 

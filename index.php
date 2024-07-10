@@ -3,7 +3,7 @@
 // * Set timezone to CST
 // * Define constant for the current version
 // ****************************************************************************************
-define('CURRENT_VERSION', 'v0.3.0');
+define('CURRENT_VERSION', 'v1.0.0');
 
 // ****************************************************************************************
 // * Define variables for API URL, directories, and other data

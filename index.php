@@ -469,7 +469,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Print columns
                 for ($i = 0; $i < $columns; $i++) {
                     echo "\n\t\t\t\t<div class='checkbox-column'>";
-                    for ($j = 0; $j < $folders_per_column; $j++) {
                     for ($j = $i; $j < $total_folders; $j += $columns) {
                         $folder = $folders[$j];
                         echo "\n\t\t\t\t\t" . '<label for="backup_' . $folder . '">';

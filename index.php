@@ -29,8 +29,9 @@ $message_color   = '';
 $message_text    = '';
 $random_color    = $colors[array_rand($colors)];
 $red             = '#dc3545';
+$release_url     = 'https://github.com/dynamiccookies/Simple-Backup-Utility/releases/tag/$latest_version';
 $sibling_folders = get_sibling_folders($current_dir);
-$version_message = compare_versions(CURRENT_VERSION, $latest_version);
+$version_message = compare_versions(CURRENT_VERSION, $latest_version, $release_url);
 
 /******************************************************************************/
 
@@ -76,11 +77,10 @@ function backup_folder($source, $destination) {
  * @return string A message indicating the version status.
  */
 
-function compare_versions($current_version, $latest_version) {
+function compare_versions($current_version, $latest_version, $release_url) {
     // Switch on the compared versions with the 'v' prefix removed
     switch (version_compare(ltrim($current_version, 'v'), ltrim($latest_version, 'v'))) {
         case -1:
-            $release_url = 'https://github.com/dynamiccookies/Simple-Backup-Utility/releases/tag/$latest_version';
             return "New version <a href='" . $release_url . "' target='_blank'>" . $latest_version . "</a> available! (<a href='#' onclick='triggerUpdate(); return false;'>Update Now</a>)";
 
         case 0:

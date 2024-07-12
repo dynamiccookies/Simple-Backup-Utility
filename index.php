@@ -436,6 +436,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Update the container's min-width based on its scrollWidth.
             function updateContainerWidth() {
+
+                // Test the container's width + left & right margins
                 if (container.clientWidth + 42 < container.scrollWidth + 40) {
                     container.style.minWidth = container.scrollWidth + 'px';
                 }
@@ -447,6 +449,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             var messageDiv = document.getElementById('message');
             if (messageDiv) {
                 messageDiv.classList.add('fade-out');
+
+                // Hide message container after 2 seconds
                 setTimeout(function() {
                     messageDiv.style.display = 'none';
                 }, 2000);

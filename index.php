@@ -73,8 +73,10 @@ function compare_versions($current_version, $latest_version) {
         case -1:
             $release_url = 'https://github.com/dynamiccookies/Simple-Backup-Utility/releases/tag/$latest_version';
             return "New version <a href='" . $release_url . "' target='_blank'>" . $latest_version . "</a> available! (<a href='#' onclick='triggerUpdate(); return false;'>Update Now</a>)";
+
         case 0:
             return $current_version;
+
         case 1:
             return 'BETA-' . $current_version . 'INSTALLED';
     }

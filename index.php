@@ -1,14 +1,17 @@
 <?php
 
-// ****************************************************************************************
-// * Set timezone to CST
-// * Define constant for the current version
-// ****************************************************************************************
+/**
+ * Define constant for the current version
+ */
+
 define('CURRENT_VERSION', 'v1.0.0');
 
-// ****************************************************************************************
-// * Define variables for API URL, directories, and other data
-// ****************************************************************************************
+/******************************************************************************/
+
+/**
+ * Define variables for API URL, directories, and other data
+ */
+
 $api_url         = 'https://api.github.com/repos/dynamiccookies/Simple-Backup-Utility/releases';
 $colors          = [
     'blue', 'blueviolet', 'brown', 'cadetblue', 'chocolate', 'crimson', 'darkblue', 
@@ -19,25 +22,29 @@ $colors          = [
     'peru', 'purple', 'rebeccapurple', 'red', 'seagreen', 'sienna', 'slategray', 'steelblue', 
     'teal', 'tomato'
 ];
-$current_dir     = getcwd(); // Get current directory
+$current_dir     = getcwd();
 $green           = '#28a745';
 $latest_version  = get_latest_release_tag($api_url);
 $message_color   = '#dc3545'; // Red by default
 $message_text    = '';
 $random_color    = $colors[array_rand($colors)];
-$sibling_folders = get_sibling_folders($current_dir); // Get sibling folder names excluding current directory
+$sibling_folders = get_sibling_folders($current_dir);
 $version_message = compare_versions(CURRENT_VERSION, $latest_version);
 
-// ****************************************************************************************
-// * Define functions for backup, deletion, and version handling
-// ****************************************************************************************
+/******************************************************************************/
+
+/**
+ * Define functions for backup, deletion, and version handling
+ */
+
 /**
  * Recursively copies files and directories from the source to the destination.
  *
  * @param string $source The source directory to back up.
- * @param string $destination The destination directory where the backup will be stored.
+ * @param string $destination The directory where the backup will be stored.
  * @return int The number of files copied.
  */
+ 
 function backup_folder($source, $destination) {
     if (!is_dir($source)) {
         return 0;
@@ -67,6 +74,7 @@ function backup_folder($source, $destination) {
  * @param string $latest_version The latest version from GitHub.
  * @return string A message indicating the version status.
  */
+
 function compare_versions($current_version, $latest_version) {
     // Switch on the compared versions with the 'v' prefix removed
     switch (version_compare(ltrim($current_version, 'v'), ltrim($latest_version, 'v'))) {
@@ -88,6 +96,7 @@ function compare_versions($current_version, $latest_version) {
  * @param string $delete_folder The path of the folder to delete.
  * @return bool True if the folder was deleted, false otherwise.
  */
+
 function delete_backup_folder($delete_folder) {
     if (!is_dir($delete_folder)) {
         return false;
@@ -107,19 +116,21 @@ function delete_backup_folder($delete_folder) {
  * @param string $dir The current directory path.
  * @return array The list of backup folders with their creation date and timestamp.
  */
+
 function get_backup_folders($dir) {
     $backup_folders = array_filter(glob($dir . '/*'), 'is_dir');
     $folder_details = [];
 
     foreach ($backup_folders as $folder) {
-        $created_date     = date('c', filectime($folder)); // ISO 8601 format for JavaScript conversion
+        // ISO 8601 date format for JavaScript conversion
+        $created_date     = date('c', filectime($folder));
         $folder_details[] = [
             'name'         => basename($folder),
             'created_date' => $created_date
         ];
     }
 
-    // Sort by created_timestamp in descending order
+    // Sort by created_date in descending order
     usort($folder_details, function($a, $b) {
         return strtotime($b['created_date']) - strtotime($a['created_date']);
     });
@@ -134,6 +145,7 @@ function get_backup_folders($dir) {
  * @return string The latest release tag name.
  */
 function get_latest_release_tag($url) {
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -152,6 +164,7 @@ function get_latest_release_tag($url) {
  * @param string $dir The current directory path.
  * @return array The list of sibling directory names.
  */
+
 function get_sibling_folders($dir) {
     $folder_names    = [];
     $sibling_folders = array_filter(glob(dirname($dir) . '/*'), 'is_dir');
@@ -170,19 +183,26 @@ function get_sibling_folders($dir) {
     return $folder_names;
 }
 
-// ****************************************************************************************
-// * Handle POST requests for backup creation, folder deletion, and updating application
-// ****************************************************************************************
+/******************************************************************************/
+
+/**
+ * Handle POST requests for backup creation, folder deletion, and updating application
+ */
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Check if a delete action is requested
     if (isset($_POST['delete'])) {
+
         // Construct the path to the folder and attempt to delete it
         if (delete_backup_folder($current_dir . '/' . $_POST['delete'])) {
+
             // Set success message if deletion is successful
             $message_text  = "The folder '" . $_POST['delete'] . "' has been deleted.";
             $message_color = $green;
+
         } else {
+
             // Set error message if deletion fails
             $message_text = "Failed to delete the folder '" . $_POST['delete'] . "'.";
         }
@@ -205,9 +225,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Check if any folders are selected for backup
         if (!isset($_POST['backup_folders']) || empty($_POST['backup_folders'])) {
             $message_text = 'No folders selected for backup.';
+
+
         } else {
+
             // Loop through selected folders and initiate backup
             foreach ($_POST['backup_folders'] as $selected_folder) {
+
                 // Define the source path for backup
                 $source = '../' . $selected_folder;
 
@@ -216,18 +240,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Check if the destination folder already exists
                 if (is_dir($folder_name)) {
+
                     // Set error message if the destination folder already exists
                     $message_text .= "The folder '" . $folder_name . "' already exists. Backup cannot be completed.<br>";
+
                 } else {
+
                     // Perform the backup operation
                     $file_count = backup_folder($source, $folder_name);
 
                     // Check if files are successfully backed up
                     if ($file_count > 0) {
+
                         // Set success message if backup operation is successful
                         $message_text .= "The folder '" . $folder_name . "' has been created with " . ($file_count - 1) . ' files/folders.<br>';
                         $message_color = $green;
+
                     } else {
+
                         // Set error message if backup operation fails
                         $message_text .= "ERROR: '" . $folder_name . "' is not a valid directory!<br>";
                     }
@@ -462,9 +492,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method='POST'>
             <input type='text' id='folder_name' name='folder_name' placeholder='Backup Name' required>
             <div class='checkbox-columns'><?php
+
+                // Get folder count, set max columns, and calculate actual columns
                 $folders_count = count($sibling_folders);
-                $max_columns   = 4; // Maximum number of columns
-                $table_columns = min($max_columns, $folders_count); // Calculate number of columns
+                $max_columns   = 4;
+                $table_columns = min($max_columns, $folders_count);
 
                 // Print columns
                 for ($i = 0; $i < $table_columns; $i++) {

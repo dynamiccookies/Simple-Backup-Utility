@@ -56,6 +56,7 @@ function backup_folder($source, $destination) {
             $count ++;
         }
     }
+
     return $count;
 }
 
@@ -94,6 +95,7 @@ function delete_backup_folder($delete_folder) {
         $path = $folder . '/' . $file;
         is_dir($path) ? delete_backup_folder($path) : unlink($path);
     }
+
     return rmdir($delete_folder);
 }
 
@@ -119,6 +121,7 @@ function get_backup_folders($dir) {
     usort($folder_details, function($a, $b) {
         return strtotime($b['created_date']) - strtotime($a['created_date']);
     });
+
     return $folder_details;
 }
 
@@ -137,6 +140,7 @@ function get_latest_release_tag($url) {
     curl_close($ch);
 
     $releases = json_decode($response, true);
+
     return isset($releases[0]['tag_name']) ? $releases[0]['tag_name'] : '';
 }
 

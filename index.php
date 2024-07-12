@@ -24,10 +24,11 @@ $colors          = [
 ];
 $current_dir     = getcwd();
 $green           = '#28a745';
-$message_color   = '#dc3545'; // Red by default
 $latest_version  = get_latest_release($api_url, 'dynamiccookies/Simple-Backup-Utility');
+$message_color   = '';
 $message_text    = '';
 $random_color    = $colors[array_rand($colors)];
+$red             = '#dc3545';
 $sibling_folders = get_sibling_folders($current_dir);
 $version_message = compare_versions(CURRENT_VERSION, $latest_version);
 
@@ -198,13 +199,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (delete_backup_folder($current_dir . '/' . $_POST['delete'])) {
 
             // Set success message if deletion is successful
-            $message_text  = "The folder '" . $_POST['delete'] . "' has been deleted.";
             $message_color = $green;
+            $message_text  = "The folder '" . $_POST['delete'] . "' has been deleted.";
 
         } else {
 
             // Set error message if deletion fails
-            $message_text = "Failed to delete the folder '" . $_POST['delete'] . "'.";
+            $message_color = $red;
+            $message_text  = "Failed to delete the folder '" . $_POST['delete'] . "'.";
         }
 
     // Check if an update action is requested
@@ -224,8 +226,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Check if any folders are selected for backup
         if (!isset($_POST['backup_folders']) || empty($_POST['backup_folders'])) {
-            $message_text = 'No folders selected for backup.';
 
+            // Set error message if no folders were selected
+            $message_color = $red;
+            $message_text  = 'No folders selected for backup.';
 
         } else {
 
@@ -242,6 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (is_dir($folder_name)) {
 
                     // Set error message if the destination folder already exists
+                    $message_color = $red;
                     $message_text .= "The folder '" . $folder_name . "' already exists. Backup cannot be completed.<br>";
 
                 } else {
@@ -253,19 +258,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if ($file_count > 0) {
 
                         // Set success message if backup operation is successful
-                        $message_text .= "The folder '" . $folder_name . "' has been created with " . ($file_count - 1) . ' files/folders.<br>';
                         $message_color = $green;
+                        $message_text .= "The folder '" . $folder_name . "' has been created with " . ($file_count - 1) . ' files/folders.<br>';
 
                     } else {
 
                         // Set error message if backup operation fails
+                        $message_color = $red;
                         $message_text .= "ERROR: '" . $folder_name . "' is not a valid directory!<br>";
                     }
                 }
             }
         }
     } else {
-        $message_text = 'How did you get here?';
+        $message_color = $red;
+        $message_text  = 'How did you get here?';
     }
 }
 

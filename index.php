@@ -24,8 +24,8 @@ $colors          = [
 ];
 $current_dir     = getcwd();
 $green           = '#28a745';
-$latest_version  = get_latest_release_tag($api_url);
 $message_color   = '#dc3545'; // Red by default
+$latest_version  = get_latest_release($api_url, 'dynamiccookies/Simple-Backup-Utility');
 $message_text    = '';
 $random_color    = $colors[array_rand($colors)];
 $sibling_folders = get_sibling_folders($current_dir);
@@ -144,12 +144,12 @@ function get_backup_folders($dir) {
  * @param string $url The GitHub API URL to fetch the releases.
  * @return string The latest release tag name.
  */
-function get_latest_release_tag($url) {
 
+function get_latest_release($url, $repo) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_USERAGENT, 'dynamiccookies/Simple-Backup-Utility');
+    curl_setopt($ch, CURLOPT_USERAGENT, $repo);
     $response = curl_exec($ch);
     curl_close($ch);
 

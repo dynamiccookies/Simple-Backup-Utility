@@ -1,4 +1,5 @@
 <?php
+
 // ****************************************************************************************
 // * Set timezone to CST
 // * Define constant for the current version
@@ -253,7 +254,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 20px;
             border: 2px solid #fff;
             border-radius: 10px;
-            background-color: <?php echo $random_color; ?>;
+            background-color: <?= $random_color; ?>;
             display: inline-block;
         }
         h1, h2 {
@@ -299,7 +300,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background-color: #0056b3;
         }
         .message {
-            background-color: <?php echo $message_color; ?>;
+            background-color: <?= $message_color; ?>;
             color: #fff;
             padding: 10px;
             border-radius: 5px;
@@ -503,13 +504,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php
                 foreach ($backup_folders as $index => $folder):
             ?><tr>
-                <td><?php echo htmlspecialchars(explode('_', $folder['name'], 2)[0]); ?></td>
-                <td><?php echo htmlspecialchars(explode('_', $folder['name'], 2)[1]); ?></td>
-                <td class='created-date' data-iso-date='<?php echo $folder['created_date']; ?>'><?php echo $folder['created_date']; ?></td>
+                <td><?= htmlspecialchars(explode('_', $folder['name'], 2)[0]); ?></td>
+                <td><?= htmlspecialchars(explode('_', $folder['name'], 2)[1]); ?></td>
+                <td class='created-date' data-iso-date='<?= $folder['created_date']; ?>'><?= $folder['created_date']; ?></td>
                 <td>
-                    <form method='POST' class='inline-form' id='delete-form-<?php echo $index; ?>'>
-                        <input type='hidden' name='delete' value='<?php echo htmlspecialchars($folder['name']); ?>'>
-                        <button type='button' class='trash-icon' onclick="confirmDelete('<?php echo htmlspecialchars($folder['name']); ?>', 'delete-form-<?php echo $index; ?>')">
+                    <form method='POST' class='inline-form' id='delete-form-<?= $index; ?>'>
+                        <input type='hidden' name='delete' value='<?= htmlspecialchars($folder['name']); ?>'>
+                        <button type='button' class='trash-icon' onclick="confirmDelete('<?= htmlspecialchars($folder['name']); ?>', 'delete-form-<?= $index; ?>')">
                             <i class='fa fa-trash'></i> <!-- Trash icon for delete button -->
                         </button>
                     </form>
@@ -522,6 +523,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Display version information -->
-    <div class='version-info'><?php echo $version_message; ?></div>
+    <div class='version-info'><?= $version_message; ?></div>
 </body>
 </html>

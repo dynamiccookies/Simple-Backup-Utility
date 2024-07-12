@@ -10,18 +10,18 @@ define('CURRENT_VERSION', 'v1.0.0');
 // ****************************************************************************************
 $api_url         = 'https://api.github.com/repos/dynamiccookies/Simple-Backup-Utility/releases';
 $colors          = [
-    "blue", "blueviolet", "brown", "cadetblue", "chocolate", "crimson", "darkblue", 
-    "darkcyan", "darkgray", "darkgreen", "darkmagenta", "darkolivegreen", "darkorchid", 
-    "darkred", "darkslateblue", "darkslategray", "darkviolet", "deeppink", "dimgray", 
-    "firebrick", "forestgreen", "gray", "green", "indianred", "magenta", "maroon", 
-    "mediumblue", "mediumvioletred", "midnightblue", "navy", "orangered", "palevioletred", 
-    "peru", "purple", "rebeccapurple", "red", "seagreen", "sienna", "slategray", "steelblue", 
-    "teal", "tomato"
+    'blue', 'blueviolet', 'brown', 'cadetblue', 'chocolate', 'crimson', 'darkblue', 
+    'darkcyan', 'darkgray', 'darkgreen', 'darkmagenta', 'darkolivegreen', 'darkorchid', 
+    'darkred', 'darkslateblue', 'darkslategray', 'darkviolet', 'deeppink', 'dimgray', 
+    'firebrick', 'forestgreen', 'gray', 'green', 'indianred', 'magenta', 'maroon', 
+    'mediumblue', 'mediumvioletred', 'midnightblue', 'navy', 'orangered', 'palevioletred', 
+    'peru', 'purple', 'rebeccapurple', 'red', 'seagreen', 'sienna', 'slategray', 'steelblue', 
+    'teal', 'tomato'
 ];
 $current_dir     = getcwd(); // Get current directory
 $green           = '#28a745';
 $latest_version  = get_latest_release_tag($api_url);
-$message_color   = "#dc3545"; // Red by default
+$message_color   = '#dc3545'; // Red by default
 $message_text    = '';
 $random_color    = $colors[array_rand($colors)];
 $sibling_folders = get_sibling_folders($current_dir); // Get sibling folder names excluding current directory
@@ -46,8 +46,8 @@ function backup_folder($source, $destination) {
     $files = array_diff(scandir($source), array('.', '..'));
 
     foreach ($files as $file) {
-        $src = "$source/$file";
-        $dst = "$destination/$file";
+        $src = $source . '/' . $file;
+        $dst = $destination . '/' . $file;
         if (is_dir($src)) {
             $count += backup_folder($src, $dst);
         } else {
@@ -70,11 +70,11 @@ function compare_versions($current_version, $latest_version) {
     switch (version_compare(ltrim($current_version, 'v'), ltrim($latest_version, 'v'))) {
         case -1:
             $release_url = 'https://github.com/dynamiccookies/Simple-Backup-Utility/releases/tag/$latest_version';
-            return "New version <a href='$release_url' target='_blank'>$latest_version</a> available! (<a href='#' onclick='triggerUpdate(); return false;'>Update Now</a>)";
+            return "New version <a href='" . $release_url . "' target='_blank'>" . $latest_version . "</a> available! (<a href='#' onclick='triggerUpdate(); return false;'>Update Now</a>)";
         case 0:
             return $current_version;
         case 1:
-            return "BETA-$current_version INSTALLED";
+            return 'BETA-' . $current_version . 'INSTALLED';
     }
 }
 
@@ -90,7 +90,7 @@ function delete_backup_folder($delete_folder) {
     }
     $files = array_diff(scandir($delete_folder), array('.', '..'));
     foreach ($files as $file) {
-        $path = "$folder/$file";
+        $path = $folder . '/' . $file;
         is_dir($path) ? delete_backup_folder($path) : unlink($path);
     }
     return rmdir($delete_folder);
@@ -173,11 +173,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Construct the path to the folder and attempt to delete it
         if (delete_backup_folder($current_dir . '/' . $_POST['delete'])) {
             // Set success message if deletion is successful
-            $message_text  = "The folder '{$_POST['delete']}' has been deleted.";
+            $message_text  = "The folder '" . $_POST['delete'] . "' has been deleted.";
             $message_color = $green;
         } else {
             // Set error message if deletion fails
-            $message_text = "Failed to delete the folder '{$_POST['delete']}'.";
+            $message_text = "Failed to delete the folder '" . $_POST['delete'] . "'.";
         }
 
     // Check if an update action is requested
@@ -189,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Download the release and save the zip file to disk
         file_put_contents(basename(__FILE__), file_get_contents(json_decode($release_info, true)[0]['assets'][0]['browser_download_url']));
 
-        header("Location: " . $_SERVER['PHP_SELF']);
+        header('Location: ' . $_SERVER['PHP_SELF']);
         exit();
 
     // Check if a backup action is requested
@@ -202,7 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Loop through selected folders and initiate backup
             foreach ($_POST['backup_folders'] as $selected_folder) {
                 // Define the source path for backup
-                $source = "../" . $selected_folder;
+                $source = '../' . $selected_folder;
 
                 // Define the destination folder name and path
                 $folder_name = $selected_folder . '_' . preg_replace('/\s+/', '-', trim($_POST['folder_name']));
@@ -210,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Check if the destination folder already exists
                 if (is_dir($folder_name)) {
                     // Set error message if the destination folder already exists
-                    $message_text .= "The folder '$folder_name' already exists. Backup cannot be completed.<br>";
+                    $message_text .= "The folder '" . $folder_name . "' already exists. Backup cannot be completed.<br>";
                 } else {
                     // Perform the backup operation
                     $file_count = backup_folder($source, $folder_name);
@@ -218,11 +218,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Check if files are successfully backed up
                     if ($file_count > 0) {
                         // Set success message if backup operation is successful
-                        $message_text .= "The folder '$folder_name' has been created with " . ($file_count - 1) . " files/folders.<br>";
+                        $message_text .= "The folder '" . $folder_name . "' has been created with " . ($file_count - 1) . ' files/folders.<br>';
                         $message_color = $green;
                     } else {
                         // Set error message if backup operation fails
-                        $message_text .= "ERROR: '$folder_name' is not a valid directory!<br>";
+                        $message_text .= "ERROR: '" . $folder_name . "' is not a valid directory!<br>";
                     }
                 }
             }
@@ -235,11 +235,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
 <head>
-    <meta charset="UTF-8">
+    <meta charset='UTF-8'>
     <title>Backup Utility</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css'>
     <style>
         body {
             background-color: #000;
@@ -265,7 +265,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flex-direction: column;
             align-items: center;
         }
-        input[type="text"] {
+        input[type='text'] {
             padding: 8px;
             font-size: 16px;
             border: 1px solid #ccc;
@@ -379,21 +379,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
     <script>
         // Set container's min-width based on the content's width
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener('DOMContentLoaded', function() {
 
             // Select the container element
-            var container = document.querySelector(".container");
+            var container = document.querySelector('.container');
 
             // Set the initial width of the container
             updateContainerWidth();
 
             // Listen for window resize events to adjust the width
-            window.addEventListener("resize", updateContainerWidth);
+            window.addEventListener('resize', updateContainerWidth);
 
             // Update the container's min-width based on its scrollWidth.
             function updateContainerWidth() {
                 if (container.clientWidth + 42 < container.scrollWidth + 40) {
-                    container.style.minWidth = container.scrollWidth + "px";
+                    container.style.minWidth = container.scrollWidth + 'px';
                 }
             }
         });
@@ -411,7 +411,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Function to confirm folder deletion and submit the form
         function confirmDelete(folderName, formId) {
-            if (confirm(`Are you sure you want to delete the folder "${folderName}"?`)) {
+            if (confirm('Are you sure you want to delete the folder "' + folderName + '"?')) {
                 document.getElementById(formId).submit();
             }
         }
@@ -448,13 +448,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </script>
 </head>
 <body>
-    <div class="container">
+    <div class='container'>
         <h1>Backup Utility</h1>
 
         <!-- Backup form for creating new backups -->
-        <form method="POST">
-            <input type="text" id="folder_name" name="folder_name" placeholder="Backup Name" required>
-            <div class="checkbox-columns"><?php
+        <form method='POST'>
+            <input type='text' id='folder_name' name='folder_name' placeholder='Backup Name' required>
+            <div class='checkbox-columns'><?php
                 $folders_count = count($sibling_folders);
                 $max_columns   = 4; // Maximum number of columns
                 $table_columns = min($max_columns, $folders_count); // Calculate number of columns
@@ -473,14 +473,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ?>
 
             </div>
-            <button type="submit" name="backup" class="backup">Backup Selected Folders</button>
+            <button type='submit' name='backup' class='backup'>Backup Selected Folders</button>
         </form>
 
         <!-- Display message if there is any -->
-        <?php if ($message_text) echo "<div id='message' class='message'>$message_text</div>"; ?>
+        <?php if ($message_text) echo "<div id='message' class='message'>" . $message_text . '</div>'; ?>
 
         <!-- Horizontal divider line -->
-        <div class="divider"></div>
+        <div class='divider'></div>
 
         <?php
             $backup_folders = get_backup_folders($current_dir);
@@ -505,12 +505,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ?><tr>
                 <td><?php echo htmlspecialchars(explode('_', $folder['name'], 2)[0]); ?></td>
                 <td><?php echo htmlspecialchars(explode('_', $folder['name'], 2)[1]); ?></td>
-                <td class="created-date" data-iso-date="<?php echo $folder['created_date']; ?>"><?php echo $folder['created_date']; ?></td>
+                <td class='created-date' data-iso-date='<?php echo $folder['created_date']; ?>'><?php echo $folder['created_date']; ?></td>
                 <td>
-                    <form method="POST" class="inline-form" id="delete-form-<?php echo $index; ?>">
-                        <input type="hidden" name="delete" value="<?php echo htmlspecialchars($folder['name']); ?>">
-                        <button type="button" class="trash-icon" onclick="confirmDelete('<?php echo htmlspecialchars($folder['name']); ?>', 'delete-form-<?php echo $index; ?>')">
-                            <i class="fa fa-trash"></i> <!-- Trash icon for delete button -->
+                    <form method='POST' class='inline-form' id='delete-form-<?php echo $index; ?>'>
+                        <input type='hidden' name='delete' value='<?php echo htmlspecialchars($folder['name']); ?>'>
+                        <button type='button' class='trash-icon' onclick="confirmDelete('<?php echo htmlspecialchars($folder['name']); ?>', 'delete-form-<?php echo $index; ?>')">
+                            <i class='fa fa-trash'></i> <!-- Trash icon for delete button -->
                         </button>
                     </form>
                 </td>
@@ -522,6 +522,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Display version information -->
-    <div class="version-info"><?php echo $version_message; ?></div>
+    <div class='version-info'><?php echo $version_message; ?></div>
 </body>
 </html>

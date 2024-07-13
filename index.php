@@ -4,7 +4,7 @@
  * Define constant for the current version
  */
 
-define('CURRENT_VERSION', 'v1.1.0');
+define('CURRENT_VERSION', 'v1.1.1');
 
 /******************************************************************************/
 
@@ -102,7 +102,7 @@ function compare_versions($current_version, $latest_version, $release_url) {
             return $current_version;
 
         case 1:
-            return 'BETA-' . $current_version . 'INSTALLED';
+            return 'BETA-' . $current_version . ' INSTALLED';
     }
 }
 
@@ -241,7 +241,7 @@ function show_message($message_text) {
 
     // Return HTML message if $message_text contains data
     if ($message_text) {
-        return "<div id='message' class='message'>" . $message_text . '</div>';
+        return "<div id='message' class='message'>" . $message_text . "</div>\n";
     }
 
     return '';
@@ -256,54 +256,8 @@ function show_message($message_text) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Check if a delete action is requested
-    if (isset($_POST['delete'])) {
-
-        // Construct the path to the folder and attempt to delete it
-        if (delete_backup_folder($current_dir . '/' . $_POST['delete'])) {
-
-            // Set success message if deletion is successful
-            $message_color = $green;
-            $message_text  = "The folder '"
-                . $_POST['delete']
-                . "' has been deleted.";
-
-        } else {
-
-            // Set error message if deletion fails
-            $message_color = $red;
-            $message_text  = "Failed to delete the folder '"
-                . $_POST['delete'] . "'.";
-        }
-
-    // Check if an update action is requested
-    } elseif (isset($_POST['update'])) {
-
-        // Fetch release information from GitHub API
-        $release_info = file_get_contents(
-            $api_url, 
-            false, 
-            stream_context_create(
-                ['http' => ['method' => 'GET','header' => 'User-Agent: PHP']]
-            )
-        );
-
-        // Download the release and save the zip file to disk
-        file_put_contents(
-            basename(__FILE__), 
-            file_get_contents(
-                json_decode(
-                    $release_info, 
-                    true
-                )[0]['assets'][0]['browser_download_url']
-            )
-        );
-
-        header('Location: ' . $_SERVER['PHP_SELF']);
-        exit();
-
     // Check if a backup action is requested
-    } elseif (isset($_POST['backup'])) {
+    if (isset($_POST['backup'])) {
 
         // Check if any folders are selected for backup
         if (
@@ -358,6 +312,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
+
+    // Check if a delete action is requested
+    } elseif (isset($_POST['delete'])) {
+
+        // Construct the path to the folder and attempt to delete it
+        if (delete_backup_folder($current_dir . '/' . $_POST['delete'])) {
+
+            // Set success message if deletion is successful
+            $message_color = $green;
+            $message_text  = "The folder '"
+                . $_POST['delete']
+                . "' has been deleted.";
+
+        } else {
+
+            // Set error message if deletion fails
+            $message_color = $red;
+            $message_text  = "Failed to delete the folder '"
+                . $_POST['delete'] . "'.";
+        }
+
+    // Check if an update action is requested
+    } elseif (isset($_POST['update'])) {
+
+        // Fetch release information from GitHub API
+        $release_info = file_get_contents(
+            $api_url, 
+            false, 
+            stream_context_create(
+                ['http' => ['method' => 'GET','header' => 'User-Agent: PHP']]
+            )
+        );
+
+        // Download the release and save the zip file to disk
+        file_put_contents(
+            basename(__FILE__), 
+            file_get_contents(
+                json_decode(
+                    $release_info, 
+                    true
+                )[0]['assets'][0]['browser_download_url']
+            )
+        );
+
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit();
+
     } else {
         $message_color = $red;
         $message_text  = 'How did you get here?';
@@ -533,13 +534,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
 
-        // Hide message after 10 seconds
+        // Show message for 10 seconds
         setTimeout(function() {
             var messageDiv = document.getElementById('message');
             if (messageDiv) {
                 messageDiv.classList.add('fade-out');
 
-                // Hide message container after 2 seconds
+                // Hide message container after 2 second fade out
                 setTimeout(function() {
                     messageDiv.style.display = 'none';
                 }, 2000);

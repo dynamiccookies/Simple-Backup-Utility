@@ -14,24 +14,32 @@ define('CURRENT_VERSION', 'v1.0.0');
 
 $api_url         = 'https://api.github.com/repos/dynamiccookies/Simple-Backup-Utility/releases';
 $colors          = [
-    'blue', 'blueviolet', 'brown', 'cadetblue', 'chocolate', 'crimson', 'darkblue', 
-    'darkcyan', 'darkgray', 'darkgreen', 'darkmagenta', 'darkolivegreen', 'darkorchid', 
-    'darkred', 'darkslateblue', 'darkslategray', 'darkviolet', 'deeppink', 'dimgray', 
-    'firebrick', 'forestgreen', 'gray', 'green', 'indianred', 'magenta', 'maroon', 
-    'mediumblue', 'mediumvioletred', 'midnightblue', 'navy', 'orangered', 'palevioletred', 
-    'peru', 'purple', 'rebeccapurple', 'red', 'seagreen', 'sienna', 'slategray', 'steelblue', 
-    'teal', 'tomato'
+    'blue', 'blueviolet', 'brown', 'cadetblue', 'chocolate', 'crimson', 
+    'darkblue', 'darkcyan', 'darkgray', 'darkgreen', 'darkmagenta', 
+    'darkolivegreen', 'darkorchid', 'darkred', 'darkslateblue', 
+    'darkslategray', 'darkviolet', 'deeppink', 'dimgray', 'firebrick', 
+    'forestgreen', 'gray', 'green', 'indianred', 'magenta', 'maroon', 
+    'mediumblue', 'mediumvioletred', 'midnightblue', 'navy', 'orangered', 
+    'palevioletred', 'peru', 'purple', 'rebeccapurple', 'red', 'seagreen', 
+    'sienna', 'slategray', 'steelblue', 'teal', 'tomato'
 ];
 $current_dir     = getcwd();
 $green           = '#28a745';
-$latest_version  = get_latest_release($api_url, 'dynamiccookies/Simple-Backup-Utility');
+$latest_version  = get_latest_release(
+    $api_url, 
+    'dynamiccookies/Simple-Backup-Utility'
+);
 $message_color   = '';
 $message_text    = '';
 $random_color    = $colors[array_rand($colors)];
 $red             = '#dc3545';
 $release_url     = 'https://github.com/dynamiccookies/Simple-Backup-Utility/releases/tag/$latest_version';
 $sibling_folders = get_sibling_folders($current_dir);
-$version_message = compare_versions(CURRENT_VERSION, $latest_version, $release_url);
+$version_message = compare_versions(
+    CURRENT_VERSION, 
+    $latest_version, 
+    $release_url
+);
 
 /******************************************************************************/
 
@@ -79,9 +87,16 @@ function backup_folder($source, $destination) {
 
 function compare_versions($current_version, $latest_version, $release_url) {
     // Switch on the compared versions with the 'v' prefix removed
-    switch (version_compare(ltrim($current_version, 'v'), ltrim($latest_version, 'v'))) {
+    switch (
+        version_compare(
+            ltrim($current_version, 'v'), 
+            ltrim($latest_version, 'v')
+        )
+    ) {
         case -1:
-            return "New version <a href='" . $release_url . "' target='_blank'>" . $latest_version . "</a> available! (<a href='#' onclick='triggerUpdate(); return false;'>Update Now</a>)";
+            return "New version <a href='" . $release_url . "' target='_blank'>"
+                . $latest_version
+                . "</a> available! (<a href='#' onclick='triggerUpdate(); return false;'>Update Now</a>)";
 
         case 0:
             return $current_version;
@@ -115,7 +130,7 @@ function delete_backup_folder($delete_folder) {
  * Retrieves the list of backup folders in the current directory.
  *
  * @param string $dir The current directory path.
- * @return array The list of backup folders with their creation date and timestamp.
+ * @return array The list of backup folders with their creation date.
  */
 
 function get_backup_folders($dir) {
@@ -184,10 +199,61 @@ function get_sibling_folders($dir) {
     return $folder_names;
 }
 
+/**
+ * Generates HTML for displaying sibling folders as columns of checkboxes.
+ *
+ * @param array $sibling_folders An array of sibling folder names.
+ * @return string The generated HTML string with checkbox columns.
+ */
+
+function print_columns($sibling_folders) {
+
+    // Get folder count, set max columns, and calc actual columns
+    $folders_count = count($sibling_folders);
+    $html          = '';
+    $max_columns   = 4;
+    $table_columns = min($max_columns, $folders_count);
+
+    // Print columns
+    for ($i = 0; $i < $table_columns; $i++) {
+        $html .= "\n\t\t\t\t<div class='checkbox-column'>";
+        for ($j = $i; $j < $folders_count; $j += $table_columns) {
+            $html .= "\n\t\t\t\t\t" . '<label for="backup_'
+                . $sibling_folders[$j] . '">';
+            $html .= '<input type="checkbox" id="backup_' . $sibling_folders[$j]
+                . '" name="backup_folders[]" value="' . $sibling_folders[$j]
+                . '">';
+            $html .= $sibling_folders[$j];
+            $html .= '</label><br>';
+        }
+        $html .= "\n\t\t\t\t</div>";
+    }
+
+    return $html;
+}
+
+/**
+ * Generates HTML to display a message if the message text is provided.
+ *
+ * @param string $message_text The text of the message to display.
+ * @return string The generated HTML string with the message or an empty string.
+ */
+
+function show_message($message_text) {
+
+    // Return HTML message if $message_text contains data
+    if ($message_text) {
+        return "<div id='message' class='message'>" . $message_text . '</div>';
+    }
+
+    return '';
+}
+
 /******************************************************************************/
 
 /**
- * Handle POST requests for backup creation, folder deletion, and updating application
+ * Handle POST requests for backup folder creation, folder deletion, and 
+ * updating the application
  */
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -200,23 +266,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Set success message if deletion is successful
             $message_color = $green;
-            $message_text  = "The folder '" . $_POST['delete'] . "' has been deleted.";
+            $message_text  = "The folder '"
+                . $_POST['delete']
+                . "' has been deleted.";
 
         } else {
 
             // Set error message if deletion fails
             $message_color = $red;
-            $message_text  = "Failed to delete the folder '" . $_POST['delete'] . "'.";
+            $message_text  = "Failed to delete the folder '"
+                . $_POST['delete'] . "'.";
         }
 
     // Check if an update action is requested
     } elseif (isset($_POST['update'])) {
 
         // Fetch release information from GitHub API
-        $release_info = file_get_contents($api_url, false, stream_context_create(['http' => ['method' => 'GET','header' => 'User-Agent: PHP']]));
+        $release_info = file_get_contents(
+            $api_url, 
+            false, 
+            stream_context_create(
+                ['http' => ['method' => 'GET','header' => 'User-Agent: PHP']]
+            )
+        );
 
         // Download the release and save the zip file to disk
-        file_put_contents(basename(__FILE__), file_get_contents(json_decode($release_info, true)[0]['assets'][0]['browser_download_url']));
+        file_put_contents(
+            basename(__FILE__), 
+            file_get_contents(
+                json_decode(
+                    $release_info, 
+                    true
+                )[0]['assets'][0]['browser_download_url']
+            )
+        );
 
         header('Location: ' . $_SERVER['PHP_SELF']);
         exit();
@@ -225,7 +308,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (isset($_POST['backup'])) {
 
         // Check if any folders are selected for backup
-        if (!isset($_POST['backup_folders']) || empty($_POST['backup_folders'])) {
+        if (
+            !isset($_POST['backup_folders']) || empty($_POST['backup_folders'])
+        ) {
 
             // Set error message if no folders were selected
             $message_color = $red;
@@ -240,14 +325,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $source = '../' . $selected_folder;
 
                 // Define the destination folder name and path
-                $folder_name = $selected_folder . '_' . preg_replace('/\s+/', '-', trim($_POST['folder_name']));
+                $folder_name = $selected_folder . '_'
+                    . preg_replace('/\s+/', '-', trim($_POST['folder_name']));
 
                 // Check if the destination folder already exists
                 if (is_dir($folder_name)) {
 
                     // Set error message if the destination folder already exists
                     $message_color = $red;
-                    $message_text .= "The folder '" . $folder_name . "' already exists. Backup cannot be completed.<br>";
+                    $message_text .= "The folder '" . $folder_name
+                        . "' already exists. Backup cannot be completed.<br>";
 
                 } else {
 
@@ -259,13 +346,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         // Set success message if backup operation is successful
                         $message_color = $green;
-                        $message_text .= "The folder '" . $folder_name . "' has been created with " . ($file_count - 1) . ' files/folders.<br>';
+                        $message_text .= "The folder '" . $folder_name
+                            . "' has been created with " . ($file_count - 1)
+                            . ' files/folders.<br>';
 
                     } else {
 
                         // Set error message if backup operation fails
                         $message_color = $red;
-                        $message_text .= "ERROR: '" . $folder_name . "' is not a valid directory!<br>";
+                        $message_text .= "ERROR: '" . $folder_name
+                            . "' is not a valid directory!<br>";
                     }
                 }
             }
@@ -502,37 +592,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Backup form for creating new backups -->
         <form method='POST'>
             <input type='text' id='folder_name' name='folder_name' placeholder='Backup Name' required>
-            <div class='checkbox-columns'><?php
-
-                // Get folder count, set max columns, and calculate actual columns
-                $folders_count = count($sibling_folders);
-                $max_columns   = 4;
-                $table_columns = min($max_columns, $folders_count);
-
-                // Print columns
-                for ($i = 0; $i < $table_columns; $i++) {
-                    echo "\n\t\t\t\t<div class='checkbox-column'>";
-                    for ($j = $i; $j < $folders_count; $j += $table_columns) {
-                        echo "\n\t\t\t\t\t" . '<label for="backup_' . $sibling_folders[$j] . '">';
-                        echo '<input type="checkbox" id="backup_' . $sibling_folders[$j] . '" name="backup_folders[]" value="' . $sibling_folders[$j] . '">';
-                        echo $sibling_folders[$j];
-                        echo '</label><br>';
-                    }
-                    echo "\n\t\t\t\t</div>";
-                }
-                ?>
-
+            <div class='checkbox-columns'>
+                <?= print_columns($sibling_folders); ?>
             </div>
             <button type='submit' name='backup' class='backup'>Backup Selected Folders</button>
         </form>
 
         <!-- Display message if there is any -->
-        <?php if ($message_text) echo "<div id='message' class='message'>" . $message_text . '</div>'; ?>
+        <?= show_message($message_text); ?>
 
         <!-- Horizontal divider line -->
         <div class='divider'></div>
 
         <?php
+
             $backup_folders = get_backup_folders($current_dir);
 
             if (empty($backup_folders)) {

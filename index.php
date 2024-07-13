@@ -102,7 +102,7 @@ function compare_versions($current_version, $latest_version, $release_url) {
             return $current_version;
 
         case 1:
-            return 'BETA-' . $current_version . 'INSTALLED';
+            return 'BETA-' . $current_version . ' INSTALLED';
     }
 }
 
@@ -241,7 +241,7 @@ function show_message($message_text) {
 
     // Return HTML message if $message_text contains data
     if ($message_text) {
-        return "<div id='message' class='message'>" . $message_text . '</div>';
+        return "<div id='message' class='message'>" . $message_text . "</div>\n";
     }
 
     return '';

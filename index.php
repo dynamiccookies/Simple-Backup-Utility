@@ -138,11 +138,9 @@ function get_backup_folders($dir) {
     $folder_details = [];
 
     foreach ($backup_folders as $folder) {
-        // ISO 8601 date format for JavaScript conversion
-        $created_date     = date('c', filectime($folder));
         $folder_details[] = [
             'name'         => basename($folder),
-            'created_date' => $created_date
+            'created_date' => date('c', filectime($folder))
         ];
     }
 

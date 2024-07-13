@@ -623,22 +623,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <th>Delete</th>
             </tr>
             <?php
-                foreach ($backup_folders as $index => $folder):
-            ?><tr>
-                <td><?= htmlspecialchars(explode('_', $folder['name'], 2)[0]); ?></td>
-                <td><?= htmlspecialchars(explode('_', $folder['name'], 2)[1]); ?></td>
-                <td class='created-date' data-iso-date='<?= $folder['created_date']; ?>'><?= $folder['created_date']; ?></td>
+                foreach ($backup_folders as $index => $folder) {
+                    $folder_name  = htmlspecialchars($folder['name']);
+                    $created_date = htmlspecialchars($folder['created_date']);
+            ?>
 
+            <tr>
+                <td><?= explode('_', $folder_name, 2)[0]; ?></td>
+                <td><?= explode('_', $folder_name, 2)[1]; ?></td>
+                <td class='created-date' data-iso-date='<?= $folder['created_date']; ?>'><?= $created_date; ?></td>
                 <td>
                     <form method='POST' class='inline-form' id='delete-form-<?= $index; ?>'>
-                        <input type='hidden' name='delete' value='<?= htmlspecialchars($folder['name']); ?>'>
-                        <button type='button' class='trash-icon' onclick="confirmDelete('<?= htmlspecialchars($folder['name']); ?>', 'delete-form-<?= $index; ?>')">
+                        <input type='hidden' name='delete' value='<?= $folder_name; ?>'>
+                        <button type='button' class='trash-icon' onclick="confirmDelete('<?= $folder_name; ?>', 'delete-form-<?= $index; ?>')">
                             <i class='fa fa-trash'></i> <!-- Trash icon for delete button -->
                         </button>
                     </form>
                 </td>
             </tr>
-            <?php endforeach; ?>
+            <?php } ?>
 
         </table>
         <?php } ?>

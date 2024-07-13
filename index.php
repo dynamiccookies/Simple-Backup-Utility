@@ -224,7 +224,7 @@ function print_columns($sibling_folders) {
             $html .= $sibling_folders[$j];
             $html .= '</label><br>';
         }
-        $html .= "\n\t\t\t\t</div>";
+        $html .= "\n\t\t\t\t</div>\n";
     }
 
     return $html;
@@ -364,6 +364,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+/******************************************************************************/
 ?>
 
 <!DOCTYPE html>
@@ -627,6 +628,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <td><?= htmlspecialchars(explode('_', $folder['name'], 2)[0]); ?></td>
                 <td><?= htmlspecialchars(explode('_', $folder['name'], 2)[1]); ?></td>
                 <td class='created-date' data-iso-date='<?= $folder['created_date']; ?>'><?= $folder['created_date']; ?></td>
+
                 <td>
                     <form method='POST' class='inline-form' id='delete-form-<?= $index; ?>'>
                         <input type='hidden' name='delete' value='<?= htmlspecialchars($folder['name']); ?>'>
@@ -640,6 +642,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         </table>
         <?php } ?>
+
     </div>
 
     <!-- Display version information -->

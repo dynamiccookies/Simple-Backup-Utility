@@ -534,13 +534,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
 
-        // Hide message after 10 seconds
+        // Show message for 10 seconds
         setTimeout(function() {
             var messageDiv = document.getElementById('message');
             if (messageDiv) {
                 messageDiv.classList.add('fade-out');
 
-                // Hide message container after 2 seconds
+                // Hide message container after 2 second fade out
                 setTimeout(function() {
                     messageDiv.style.display = 'none';
                 }, 2000);

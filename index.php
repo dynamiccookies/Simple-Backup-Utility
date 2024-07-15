@@ -4,7 +4,7 @@
  * Define constant for the current version
  */
 
-define('CURRENT_VERSION', 'v1.1.1');
+define('CURRENT_VERSION', 'v1.1.2');
 
 /******************************************************************************/
 
@@ -23,7 +23,6 @@ $colors          = [
     'palevioletred', 'peru', 'purple', 'rebeccapurple', 'red', 'seagreen', 
     'sienna', 'slategray', 'steelblue', 'teal', 'tomato'
 ];
-$current_dir     = getcwd();
 $green           = '#28a745';
 $latest_version  = get_latest_release(
     $api_url, 
@@ -34,7 +33,7 @@ $message_text    = '';
 $random_color    = $colors[array_rand($colors)];
 $red             = '#dc3545';
 $release_url     = 'https://github.com/dynamiccookies/Simple-Backup-Utility/releases/tag/$latest_version';
-$sibling_folders = get_sibling_folders($current_dir);
+$sibling_folders = get_sibling_folders(__DIR__);
 $version_message = compare_versions(
     CURRENT_VERSION, 
     $latest_version, 
@@ -119,7 +118,7 @@ function delete_backup_folder($delete_folder) {
     }
     $files = array_diff(scandir($delete_folder), array('.', '..'));
     foreach ($files as $file) {
-        $path = $folder . '/' . $file;
+        $path = $delete_folder . '/' . $file;
         is_dir($path) ? delete_backup_folder($path) : unlink($path);
     }
 
@@ -317,7 +316,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (isset($_POST['delete'])) {
 
         // Construct the path to the folder and attempt to delete it
-        if (delete_backup_folder($current_dir . '/' . $_POST['delete'])) {
+        if (delete_backup_folder(__DIR__ . '/' . $_POST['delete'])) {
 
             // Set success message if deletion is successful
             $message_color = $green;
@@ -365,6 +364,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// Set $backup_folders after folder backup or delete
+$backup_folders = get_backup_folders(__DIR__);
 /******************************************************************************/
 ?>
 
@@ -415,7 +416,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             gap: 10px;
             margin-bottom: 20px;
         }
-        button.backup, .message {
+        button.backup {
             box-shadow: 0 8px 8px 1px rgba(0, 0, 0, .2);
             font-weight: bold;
         }
@@ -432,6 +433,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         button:hover {
             background-color: #0056b3;
         }
+        .checkbox-columns {
+            display: flex;
+            gap: 20px;
+            text-align: left;
+            margin: 25px 25px 15px 25px;
+        }
+        .checkbox-column label {
+            display: block;
+            white-space: nowrap;
+            margin-bottom: 5px;
+        }
+        .divider {
+            border-top: 1px solid #fff;
+            margin: 20px 0;
+        }
+        .version-info {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            margin: 10px;
+            font-size: small;
+        }
+        .version-info a {
+            color: yellow;
+            font-weight: bold;
+        }
+        <?php
+            //Conditionally add message CSS
+            if ($message_text) {
+        ?>
+
         .message {
             background-color: <?= $message_color; ?>;
             color: #fff;
@@ -439,7 +471,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 5px;
             margin-bottom: 10px;
             transition: opacity 2s ease-out;
+            box-shadow: 0 8px 8px 1px rgba(0, 0, 0, .2);
+            font-weight: bold;
         }
+        .fade-out {
+            opacity: 0;
+        }
+        <?php 
+            }
+
+            // Conditionally add Existing Backups CSS
+            if (!empty($backup_folders)) { 
+        ?>
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -468,24 +512,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         table th:nth-child(4), table td:nth-child(4) {
             width: 10%;
         }
-        .checkbox-columns {
-            display: flex;
-            gap: 20px;
-            text-align: left;
-            margin: 25px 25px 15px 25px;
-        }
-        .checkbox-column label {
-            display: block;
-            white-space: nowrap;
-            margin-bottom: 5px;
-        }
-        .divider {
-            border-top: 1px solid #fff;
-            margin: 20px 0;
-        }
-        .fade-out {
-            opacity: 0;
-        }
         .inline-form {
             display: inline;
         }
@@ -499,17 +525,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .trash-icon:hover {
             color: #c82333;
         }
-        .version-info {
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            margin: 10px;
-            font-size: small;
-        }
-        .version-info a {
-            color: yellow;
-            font-weight: bold;
-        }
+        <?php } ?>
+
     </style>
     <script>
         // Set container's min-width based on the content's width
@@ -534,26 +551,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
 
-        // Show message for 10 seconds
-        setTimeout(function() {
-            var messageDiv = document.getElementById('message');
-            if (messageDiv) {
-                messageDiv.classList.add('fade-out');
-
-                // Hide message container after 2 second fade out
-                setTimeout(function() {
-                    messageDiv.style.display = 'none';
-                }, 2000);
-            }
-        }, 10000);
-
-        // Function to confirm folder deletion and submit the form
-        function confirmDelete(folderName, formId) {
-            if (confirm('Are you sure you want to delete the folder "' + folderName + '"?')) {
-                document.getElementById(formId).submit();
-            }
-        }
-
         // Function to trigger update from GitHub repository's latest release
         function triggerUpdate() {
             const form  = document.createElement('form');
@@ -569,6 +566,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             document.body.appendChild(form);
             form.submit();
         }
+        <?php
+            // Conditionally add Existing Backups JavaScript
+            if (!empty($backup_folders)) { 
+        ?>
+
+        // Function to confirm folder deletion and submit the form
+        function confirmDelete(folderName, formId) {
+            if (confirm('Are you sure you want to delete the folder "' + folderName + '"?')) {
+                document.getElementById(formId).submit();
+            }
+        }
 
         // Function to convert ISO 8601 date to local timezone and format
         function convertToLocalTime(isoDate) {
@@ -579,10 +587,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Convert all dates in the table to local timezone
         window.addEventListener('DOMContentLoaded', (event) => {
             document.querySelectorAll('.created-date').forEach(element => {
-                const isoDate = element.getAttribute('data-iso-date');
+                const isoDate       = element.getAttribute('data-iso-date');
                 element.textContent = convertToLocalTime(isoDate);
             });
         });
+        <?php
+            }
+
+            // Conditionally add message div JavaScript
+            if ($message_text) {
+        ?>
+
+        // Show message for 10 seconds
+        setTimeout(function() {
+            var messageDiv = document.getElementById('message');
+            messageDiv.classList.add('fade-out');
+
+            // Hide message container after 2 second fade out
+            setTimeout(function() {
+                messageDiv.style.display = 'none';
+            }, 2000);
+        }, 10000);
+        <?php } ?>
+
     </script>
 </head>
 <body>
@@ -603,11 +630,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Horizontal divider line -->
         <div class='divider'></div>
-
         <?php
-
-            $backup_folders = get_backup_folders($current_dir);
-
             if (empty($backup_folders)) {
                 echo '<h2>No Backups Found</h2>';
             } else {

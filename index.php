@@ -579,7 +579,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Convert all dates in the table to local timezone
         window.addEventListener('DOMContentLoaded', (event) => {
             document.querySelectorAll('.created-date').forEach(element => {
-                const isoDate = element.getAttribute('data-iso-date');
+                const isoDate       = element.getAttribute('data-iso-date');
                 element.textContent = convertToLocalTime(isoDate);
             });
         });
@@ -603,7 +603,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Horizontal divider line -->
         <div class='divider'></div>
-
         <?php
 
             $backup_folders = get_backup_folders($current_dir);

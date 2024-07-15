@@ -13,6 +13,7 @@ define('CURRENT_VERSION', 'v1.1.1');
  */
 
 $api_url         = 'https://api.github.com/repos/dynamiccookies/Simple-Backup-Utility/releases';
+$backup_folders  = get_backup_folders(__DIR__);
 $colors          = [
     'blue', 'blueviolet', 'brown', 'cadetblue', 'chocolate', 'crimson', 
     'darkblue', 'darkcyan', 'darkgray', 'darkgreen', 'darkmagenta', 
@@ -23,7 +24,6 @@ $colors          = [
     'palevioletred', 'peru', 'purple', 'rebeccapurple', 'red', 'seagreen', 
     'sienna', 'slategray', 'steelblue', 'teal', 'tomato'
 ];
-$current_dir     = getcwd();
 $green           = '#28a745';
 $latest_version  = get_latest_release(
     $api_url, 
@@ -34,7 +34,7 @@ $message_text    = '';
 $random_color    = $colors[array_rand($colors)];
 $red             = '#dc3545';
 $release_url     = 'https://github.com/dynamiccookies/Simple-Backup-Utility/releases/tag/$latest_version';
-$sibling_folders = get_sibling_folders($current_dir);
+$sibling_folders = get_sibling_folders(__DIR__);
 $version_message = compare_versions(
     CURRENT_VERSION, 
     $latest_version, 
@@ -317,7 +317,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (isset($_POST['delete'])) {
 
         // Construct the path to the folder and attempt to delete it
-        if (delete_backup_folder($current_dir . '/' . $_POST['delete'])) {
+        if (delete_backup_folder(__DIR__ . '/' . $_POST['delete'])) {
 
             // Set success message if deletion is successful
             $message_color = $green;
@@ -604,9 +604,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Horizontal divider line -->
         <div class='divider'></div>
         <?php
-
-            $backup_folders = get_backup_folders($current_dir);
-
             if (empty($backup_folders)) {
                 echo '<h2>No Backups Found</h2>';
             } else {

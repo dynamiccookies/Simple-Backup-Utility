@@ -432,7 +432,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         button:hover {
             background-color: #0056b3;
         }
-        <?php if ($message_text) { ?>
+        .checkbox-columns {
+            display: flex;
+            gap: 20px;
+            text-align: left;
+            margin: 25px 25px 15px 25px;
+        }
+        .checkbox-column label {
+            display: block;
+            white-space: nowrap;
+            margin-bottom: 5px;
+        }
+        .divider {
+            border-top: 1px solid #fff;
+            margin: 20px 0;
+        }
+        .version-info {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            margin: 10px;
+            font-size: small;
+        }
+        .version-info a {
+            color: yellow;
+            font-weight: bold;
+        }
+        <?php
+            //Conditionally add message CSS
+            if ($message_text) {
+        ?>
 
         .message {
             background-color: <?= $message_color; ?>;
@@ -444,7 +473,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 8px 8px 1px rgba(0, 0, 0, .2);
             font-weight: bold;
         }
-        <?php } ?>
+        .fade-out {
+            opacity: 0;
+        }
+        <?php 
+            }
+
+            // Conditionally add Existing Backups CSS
+            if (!empty($backup_folders)) { 
+        ?>
 
         table {
             width: 100%;
@@ -474,24 +511,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         table th:nth-child(4), table td:nth-child(4) {
             width: 10%;
         }
-        .checkbox-columns {
-            display: flex;
-            gap: 20px;
-            text-align: left;
-            margin: 25px 25px 15px 25px;
-        }
-        .checkbox-column label {
-            display: block;
-            white-space: nowrap;
-            margin-bottom: 5px;
-        }
-        .divider {
-            border-top: 1px solid #fff;
-            margin: 20px 0;
-        }
-        .fade-out {
-            opacity: 0;
-        }
         .inline-form {
             display: inline;
         }
@@ -505,17 +524,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .trash-icon:hover {
             color: #c82333;
         }
-        .version-info {
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            margin: 10px;
-            font-size: small;
-        }
-        .version-info a {
-            color: yellow;
-            font-weight: bold;
-        }
+        <?php } ?>
+
     </style>
     <script>
         // Set container's min-width based on the content's width

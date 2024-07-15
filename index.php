@@ -537,26 +537,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         });
-        <?php if ($message_text) { ?>
-
-        // Show message for 10 seconds
-        setTimeout(function() {
-            var messageDiv = document.getElementById('message');
-            messageDiv.classList.add('fade-out');
-
-            // Hide message container after 2 second fade out
-            setTimeout(function() {
-                messageDiv.style.display = 'none';
-            }, 2000);
-        }, 10000);
-        <?php } ?>
-
-        // Function to confirm folder deletion and submit the form
-        function confirmDelete(folderName, formId) {
-            if (confirm('Are you sure you want to delete the folder "' + folderName + '"?')) {
-                document.getElementById(formId).submit();
-            }
-        }
 
         // Function to trigger update from GitHub repository's latest release
         function triggerUpdate() {
@@ -573,6 +553,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             document.body.appendChild(form);
             form.submit();
         }
+        <?php
+            // Conditionally add Existing Backups JavaScript
+            if (!empty($backup_folders)) { 
+        ?>
+
+        // Function to confirm folder deletion and submit the form
+        function confirmDelete(folderName, formId) {
+            if (confirm('Are you sure you want to delete the folder "' + folderName + '"?')) {
+                document.getElementById(formId).submit();
+            }
+        }
 
         // Function to convert ISO 8601 date to local timezone and format
         function convertToLocalTime(isoDate) {
@@ -587,6 +578,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 element.textContent = convertToLocalTime(isoDate);
             });
         });
+        <?php
+            }
+
+            // Conditionally add message div JavaScript
+            if ($message_text) {
+        ?>
+
+        // Show message for 10 seconds
+        setTimeout(function() {
+            var messageDiv = document.getElementById('message');
+            messageDiv.classList.add('fade-out');
+
+            // Hide message container after 2 second fade out
+            setTimeout(function() {
+                messageDiv.style.display = 'none';
+            }, 2000);
+        }, 10000);
+        <?php } ?>
+
     </script>
 </head>
 <body>

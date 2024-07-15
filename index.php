@@ -13,7 +13,6 @@ define('CURRENT_VERSION', 'v1.1.1');
  */
 
 $api_url         = 'https://api.github.com/repos/dynamiccookies/Simple-Backup-Utility/releases';
-$backup_folders  = get_backup_folders(__DIR__);
 $colors          = [
     'blue', 'blueviolet', 'brown', 'cadetblue', 'chocolate', 'crimson', 
     'darkblue', 'darkcyan', 'darkgray', 'darkgreen', 'darkmagenta', 
@@ -365,6 +364,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// Set $backup_folders after folder backup or delete
+$backup_folders = get_backup_folders(__DIR__);
 /******************************************************************************/
 ?>
 

@@ -415,7 +415,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             gap: 10px;
             margin-bottom: 20px;
         }
-        button.backup, .message {
+        button.backup {
             box-shadow: 0 8px 8px 1px rgba(0, 0, 0, .2);
             font-weight: bold;
         }
@@ -441,6 +441,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 5px;
             margin-bottom: 10px;
             transition: opacity 2s ease-out;
+            box-shadow: 0 8px 8px 1px rgba(0, 0, 0, .2);
+            font-weight: bold;
         }
         <?php } ?>
 

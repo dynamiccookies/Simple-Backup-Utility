@@ -432,6 +432,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         button:hover {
             background-color: #0056b3;
         }
+        <?php if ($message_text) { ?>
+
         .message {
             background-color: <?= $message_color; ?>;
             color: #fff;
@@ -440,6 +442,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-bottom: 10px;
             transition: opacity 2s ease-out;
         }
+        <?php } ?>
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -533,19 +537,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         });
+        <?php if ($message_text) { ?>
 
         // Show message for 10 seconds
         setTimeout(function() {
             var messageDiv = document.getElementById('message');
-            if (messageDiv) {
-                messageDiv.classList.add('fade-out');
+            messageDiv.classList.add('fade-out');
 
-                // Hide message container after 2 second fade out
-                setTimeout(function() {
-                    messageDiv.style.display = 'none';
-                }, 2000);
-            }
+            // Hide message container after 2 second fade out
+            setTimeout(function() {
+                messageDiv.style.display = 'none';
+            }, 2000);
         }, 10000);
+        <?php } ?>
 
         // Function to confirm folder deletion and submit the form
         function confirmDelete(folderName, formId) {

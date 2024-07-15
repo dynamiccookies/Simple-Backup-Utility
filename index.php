@@ -118,7 +118,7 @@ function delete_backup_folder($delete_folder) {
     }
     $files = array_diff(scandir($delete_folder), array('.', '..'));
     foreach ($files as $file) {
-        $path = $folder . '/' . $file;
+        $path = $delete_folder . '/' . $file;
         is_dir($path) ? delete_backup_folder($path) : unlink($path);
     }
 

@@ -32,7 +32,8 @@ $message_color   = '';
 $message_text    = '';
 $random_color    = $colors[array_rand($colors)];
 $red             = '#dc3545';
-$release_url     = 'https://github.com/dynamiccookies/Simple-Backup-Utility/releases/tag/$latest_version';
+$release_url     = 'https://github.com/dynamiccookies/Simple-Backup-Utility/releases/tag/'
+    . $latest_version;
 $sibling_folders = get_sibling_folders(__DIR__);
 $version_message = compare_versions(
     CURRENT_VERSION, 

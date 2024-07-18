@@ -524,7 +524,7 @@ $backup_folders = get_backup_folders(__DIR__);
             background-color: lightgray;
         }
         table th:nth-child(1), table td:nth-child(1) {
-            width: 54px;
+            min-width: 54px;
         }
         table th:nth-child(2), table th:nth-child(3), table th:nth-child(4),
         table td:nth-child(2), table td:nth-child(3), table td:nth-child(4) {

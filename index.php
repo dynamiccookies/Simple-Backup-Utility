@@ -95,9 +95,9 @@ function compare_versions($current_version, $latest_version, $release_url) {
     ) {
         case -1:
             return "New version <a href='" . $release_url
-                . "' class='update' title='Release Notes' title='Install Now' target='_blank'>"
+                . "' class='update' title='Release Notes' target='_blank'>"
                 . $latest_version
-                . "</a> available! (<a href='#' class='update' onclick='triggerUpdate(); return false;'>Update Now</a>)";
+                . "</a> available! (<a href='#' class='update' title='Install Now' onclick='triggerUpdate(); return false;'>Update Now</a>)";
 
         case 0:
             return "<a href='" . $release_url

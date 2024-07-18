@@ -4,7 +4,7 @@
  * Define constant for the current version
  */
 
-define('CURRENT_VERSION', 'v1.1.2');
+define('CURRENT_VERSION', 'v1.2.0');
 
 /******************************************************************************/
 
@@ -295,8 +295,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Check if files are successfully backed up
                     if ($file_count > 0) {
 
+                        // If $message_color is not already $red, set to $green
+                        if (message_color != $red) {
+                            $message_color = $green;
+                        }
+                        
                         // Set success message if backup operation is successful
-                        $message_color = $green;
                         $message_text .= "The folder '" . $folder_name
                             . "' has been created with " . ($file_count - 1)
                             . ' files/folders.<br>';
@@ -315,21 +319,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if a delete action is requested
     } elseif (isset($_POST['delete'])) {
 
-        // Construct the path to the folder and attempt to delete it
-        if (delete_backup_folder(__DIR__ . '/' . $_POST['delete'])) {
+        if (!is_array($_POST['delete'])) {
+            $_POST['delete'] = json_decode($_POST['delete'], true);
+        }
 
-            // Set success message if deletion is successful
-            $message_color = $green;
-            $message_text  = "The folder '"
-                . $_POST['delete']
-                . "' has been deleted.";
+        // Loop through each folder selected
+        foreach ($_POST['delete'] as $dir) {
 
-        } else {
+            // Construct the path to the folder and attempt to delete it
+            if (delete_backup_folder(__DIR__ . '/' . $dir)) {
 
-            // Set error message if deletion fails
-            $message_color = $red;
-            $message_text  = "Failed to delete the folder '"
-                . $_POST['delete'] . "'.";
+                // If $message_color is not already $red, set to $green
+                if (message_color != $red) {
+                    $message_color = $green;
+                }
+
+                // Set success message if deletion is successful
+                $message_text  .= "Folder '" . $dir . "' has been deleted.<br>";
+
+            } else {
+
+                // Set error message if deletion fails
+                $message_color = $red;
+                $message_text .= "Failed to delete folder '" . $dir . "'.<br>";
+            }
+
         }
 
     // Check if an update action is requested
@@ -448,6 +462,9 @@ $backup_folders = get_backup_folders(__DIR__);
             border-top: 1px solid #fff;
             margin: 20px 0;
         }
+        .hidden {
+            display: none;
+        }
         .version-info {
             position: fixed;
             bottom: 0;
@@ -498,6 +515,7 @@ $backup_folders = get_backup_folders(__DIR__);
         table th {
             background-color: #007bff;
             color: #fff;
+            height: 38px
         }
         table tr:nth-child(even) {
             background-color: snow;
@@ -505,11 +523,14 @@ $backup_folders = get_backup_folders(__DIR__);
         table tr:nth-child(odd) {
             background-color: lightgray;
         }
-        table th:nth-child(1), table th:nth-child(2), table th:nth-child(3),
-        table td:nth-child(1), table td:nth-child(2), table td:nth-child(3) {
-            width: 30%;
+        table th:nth-child(1), table td:nth-child(1) {
+            min-width: 54px;
         }
-        table th:nth-child(4), table td:nth-child(4) {
+        table th:nth-child(2), table th:nth-child(3), table th:nth-child(4),
+        table td:nth-child(2), table td:nth-child(3), table td:nth-child(4) {
+            width: 27%;
+        }
+        table th:nth-child(5), table td:nth-child(5) {
             width: 10%;
         }
         .inline-form {
@@ -544,12 +565,50 @@ $backup_folders = get_backup_folders(__DIR__);
             // Update the container's min-width based on its scrollWidth.
             function updateContainerWidth() {
 
-                // Test the container's width + left & right margins
-                if (container.clientWidth + 42 < container.scrollWidth + 40) {
+                // Test the container's width
+                if (container.clientWidth < container.scrollWidth) {
                     container.style.minWidth = container.scrollWidth + 'px';
                 }
             }
         });
+
+        // Show trash icon in column header when 2+ checkboxes checked
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const checkboxes = document.querySelectorAll('.row-checkbox')
+            const button     = document.getElementById('multi-delete');
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    const checkedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+                    if (checkedCheckboxes.length >= 2) {
+                        button.classList.remove('hidden');
+                    } else {
+                        button.classList.add('hidden');
+                    }
+                });
+            });
+        });
+
+        // Function to trigger deleting multiple folders
+        function triggerMultiDelete() {
+            if (confirm('Are you sure you want to delete the selected folders?')) {
+                const checkboxes = document.querySelectorAll('td input[type="checkbox"]:checked');
+                const folders    = Array.from(checkboxes).map(cb => cb.value);
+
+                const form  = document.createElement('form');
+                form.method = 'post';
+                form.action = '.';
+
+                const updateInput = document.createElement('input');
+                updateInput.type  = 'hidden';
+                updateInput.name  = 'delete';
+                updateInput.value = JSON.stringify(folders);
+
+                form.appendChild(updateInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
 
         // Function to trigger update from GitHub repository's latest release
         function triggerUpdate() {
@@ -572,7 +631,7 @@ $backup_folders = get_backup_folders(__DIR__);
         ?>
 
         // Function to confirm folder deletion and submit the form
-        function confirmDelete(folderName, formId) {
+        function confirmSingleDelete(folderName, formId) {
             if (confirm('Are you sure you want to delete the folder "' + folderName + '"?')) {
                 document.getElementById(formId).submit();
             }
@@ -641,7 +700,12 @@ $backup_folders = get_backup_folders(__DIR__);
         <!-- Table displaying existing backups -->
         <table>
             <tr>
-                <th>Backup Folder</th>
+                <th>
+                    <button id='multi-delete' class='hidden' onclick='triggerMultiDelete()'>
+                        <i class='fa fa-trash'></i>
+                    </button>
+                </th>
+                <th>Name</th>
                 <th>Description</th>
                 <th>Created Date</th>
                 <th>Delete</th>
@@ -653,13 +717,14 @@ $backup_folders = get_backup_folders(__DIR__);
             ?>
 
             <tr>
+                <td><input type='checkbox' name='delete[]' class='row-checkbox' value='<?= $folder_name; ?>'></td>
                 <td><?= explode('_', $folder_name, 2)[0]; ?></td>
                 <td><?= explode('_', $folder_name, 2)[1]; ?></td>
                 <td class='created-date' data-iso-date='<?= $folder['created_date']; ?>'><?= $created_date; ?></td>
                 <td>
                     <form method='POST' class='inline-form' id='delete-form-<?= $index; ?>'>
-                        <input type='hidden' name='delete' value='<?= $folder_name; ?>'>
-                        <button type='button' class='trash-icon' onclick="confirmDelete('<?= $folder_name; ?>', 'delete-form-<?= $index; ?>')">
+                        <input type='hidden' name='delete[]' value='<?= $folder_name; ?>'>
+                        <button type='button' class='trash-icon' onclick="confirmSingleDelete('<?= $folder_name; ?>', 'delete-form-<?= $index; ?>')">
                             <i class='fa fa-trash'></i> <!-- Trash icon for delete button -->
                         </button>
                     </form>

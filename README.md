@@ -11,7 +11,8 @@ Simple Backup Utility is a PHP script that allows you to create and manage backu
 
 - **Backup Creation**: Easily create backups of specific folders.
 - **Multiple Folder Backup**: Select and backup multiple folders simultaneously.
-- **Backup Deletion**: Remove existing backup folders.
+- **Backup Deletion**: Remove individual existing backup folders.
+- **Multiple Backup Deletion**: Select and delete multiple folders simultaneously.
 - **User-Friendly Interface**: Intuitive web interface for straightforward operation.
 - **Easy Update**: Built-in update feature for seamless updates to the latest version.
 
@@ -35,9 +36,16 @@ Simple Backup Utility is a PHP script that allows you to create and manage backu
 3. Place a checkmark next to each of the folders you'd like to backup.
 4. Click the "Backup Selected Folders" button.
 
-### Deleting a Backup
+### Deleting an Individual Backup
 
 1. Click the trash icon next to the Existing Backups entry.
+
+### Deleting Multiple Backups
+
+1. Select the checkmark for each backup folder to be deleted.
+2. Click the trash icon in the checkbox column header.
+
+**Note:** The trash icon only appears when two or more checkboxes are selected.
 
 ### Updating to Latest Version
 

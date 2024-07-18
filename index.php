@@ -94,12 +94,15 @@ function compare_versions($current_version, $latest_version, $release_url) {
         )
     ) {
         case -1:
-            return "New version <a href='" . $release_url . "' target='_blank'>"
+            return "New version <a href='" . $release_url
+                . "' class='update' title='Release Notes' title='Install Now' target='_blank'>"
                 . $latest_version
-                . "</a> available! (<a href='#' onclick='triggerUpdate(); return false;'>Update Now</a>)";
+                . "</a> available! (<a href='#' class='update' onclick='triggerUpdate(); return false;'>Update Now</a>)";
 
         case 0:
-            return $current_version;
+            return "<a href='" . $release_url
+                . "' class='version-link' title='Release Notes' target='_blank'>"
+                . $current_version . '</a>';
 
         case 1:
             return 'BETA-' . $current_version . ' INSTALLED';
@@ -473,11 +476,18 @@ $backup_folders = get_backup_folders(__DIR__);
             margin: 10px;
             font-size: small;
         }
-        .version-info a {
+        .version-info a.update {
             color: yellow;
             font-weight: bold;
         }
-        <?php
+        .version-info a.version-link, 
+        .version-info a.version-link:visited,
+        .version-info a.version-link:hover,
+        .version-info a.version-link:active {
+            color: white;
+            text-decoration: none;
+        }
+       <?php
             //Conditionally add message CSS
             if ($message_text) {
         ?>
@@ -740,5 +750,11 @@ $backup_folders = get_backup_folders(__DIR__);
 
     <!-- Display version information -->
     <div class='version-info'><?= $version_message; ?></div>
+    
+    <!--
+    Simple Backup Utility
+    Repository: https://github.com/dynamiccookies/Simple-Backup-Utility
+    License: MIT
+    -->
 </body>
 </html>

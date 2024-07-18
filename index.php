@@ -565,8 +565,8 @@ $backup_folders = get_backup_folders(__DIR__);
             // Update the container's min-width based on its scrollWidth.
             function updateContainerWidth() {
 
-                // Test the container's width + left & right margins
-                if (container.clientWidth + 42 < container.scrollWidth + 40) {
+                // Test the container's width
+                if (container.clientWidth < container.scrollWidth) {
                     container.style.minWidth = container.scrollWidth + 'px';
                 }
             }

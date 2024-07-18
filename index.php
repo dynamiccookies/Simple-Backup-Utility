@@ -641,7 +641,7 @@ $backup_folders = get_backup_folders(__DIR__);
         <!-- Table displaying existing backups -->
         <table>
             <tr>
-                <th>Backup Folder</th>
+                <th>Name</th>
                 <th>Description</th>
                 <th>Created Date</th>
                 <th>Delete</th>

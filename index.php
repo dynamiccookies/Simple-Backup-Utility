@@ -4,7 +4,7 @@
  * Define constant for the current version
  */
 
-define('CURRENT_VERSION', 'v1.2.0');
+define('CURRENT_VERSION', 'v1.2.1');
 
 /******************************************************************************/
 
@@ -32,7 +32,8 @@ $message_color   = '';
 $message_text    = '';
 $random_color    = $colors[array_rand($colors)];
 $red             = '#dc3545';
-$release_url     = 'https://github.com/dynamiccookies/Simple-Backup-Utility/releases/tag/$latest_version';
+$release_url     = 'https://github.com/dynamiccookies/Simple-Backup-Utility/releases/tag/'
+    . $latest_version;
 $sibling_folders = get_sibling_folders(__DIR__);
 $version_message = compare_versions(
     CURRENT_VERSION, 
@@ -93,12 +94,15 @@ function compare_versions($current_version, $latest_version, $release_url) {
         )
     ) {
         case -1:
-            return "New version <a href='" . $release_url . "' target='_blank'>"
+            return "New version <a href='" . $release_url
+                . "' class='update' title='Release Notes' target='_blank'>"
                 . $latest_version
-                . "</a> available! (<a href='#' onclick='triggerUpdate(); return false;'>Update Now</a>)";
+                . "</a> available! (<a href='#' class='update' title='Install Now' onclick='triggerUpdate(); return false;'>Update Now</a>)";
 
         case 0:
-            return $current_version;
+            return "<a href='" . $release_url
+                . "' class='version-link' title='Release Notes' target='_blank'>"
+                . $current_version . '</a>';
 
         case 1:
             return 'BETA-' . $current_version . ' INSTALLED';
@@ -472,11 +476,18 @@ $backup_folders = get_backup_folders(__DIR__);
             margin: 10px;
             font-size: small;
         }
-        .version-info a {
+        .version-info a.update {
             color: yellow;
             font-weight: bold;
         }
-        <?php
+        .version-info a.version-link, 
+        .version-info a.version-link:visited,
+        .version-info a.version-link:hover,
+        .version-info a.version-link:active {
+            color: white;
+            text-decoration: none;
+        }
+       <?php
             //Conditionally add message CSS
             if ($message_text) {
         ?>
@@ -739,5 +750,11 @@ $backup_folders = get_backup_folders(__DIR__);
 
     <!-- Display version information -->
     <div class='version-info'><?= $version_message; ?></div>
+    
+    <!--
+    Simple Backup Utility
+    Repository: https://github.com/dynamiccookies/Simple-Backup-Utility
+    License: MIT
+    -->
 </body>
 </html>

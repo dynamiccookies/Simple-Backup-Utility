@@ -4,7 +4,7 @@
  * Define constant for the current version
  */
 
-define('CURRENT_VERSION', 'v1.2.1');
+define('CURRENT_VERSION', 'v1.2.2');
 
 /******************************************************************************/
 
@@ -395,116 +395,134 @@ $backup_folders = get_backup_folders(__DIR__);
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css'>
     <style>
         body {
-            background-color: #000;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            text-align: center;
+            background-color : black;
+            color            : white;
+            font-family      : Arial, sans-serif;
+            text-align       : center;
         }
+
         .container {
-            max-width: 90%;
-            margin: 20px auto;
-            padding: 20px;
-            border: 2px solid #fff;
-            border-radius: 10px;
-            background-color: <?= $random_color; ?>;
-            display: inline-block;
+            max-width        : 90%;
+            margin           : 20px auto;
+            padding          : 20px;
+            border           : 2px solid white;
+            border-radius    : 10px;
+            background-color : <?= $random_color; ?>;
+            display          : inline-block;
         }
+
         h1, h2 {
-            color: #fff;
+            color            : white;
         }
+
         form {
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin-bottom    : 20px;
+            display          : flex;
+            flex-direction   : column;
+            align-items      : center;
         }
+
         input[type='text'] {
-            padding: 8px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 75%;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-            text-align: center;
+            padding          : 8px;
+            font-size        : 16px;
+            border           : 1px solid lightgray;
+            border-radius    : 5px;
+            width            : 75%;
+            box-sizing       : border-box;
+            margin-bottom    : 10px;
+            text-align       : center;
         }
+
         .button-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
+            display          : flex;
+            justify-content  : center;
+            gap              : 10px;
+            margin-bottom    : 20px;
         }
+
         button.backup {
-            box-shadow: 0 8px 8px 1px rgba(0, 0, 0, .2);
-            font-weight: bold;
+            box-shadow       : 0 8px 8px 1px rgba(0, 0, 0, .2);
+            font-weight      : bold;
         }
+
         button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: #007bff;
-            color: #fff;
-            transition: background-color 0.3s ease;
+            padding          : 10px 20px;
+            font-size        : 16px;
+            border           : none;
+            border-radius    : 5px;
+            cursor           : pointer;
+            background-color : #007bff;
+            color            : white;
+            transition       : background-color 0.3s ease;
         }
+
         button:hover {
-            background-color: #0056b3;
+            background-color : #0056b3;
         }
+
         .checkbox-columns {
-            display: flex;
-            gap: 20px;
-            text-align: left;
-            margin: 25px 25px 15px 25px;
+            display          : flex;
+            gap              : 20px;
+            text-align       : left;
+            margin           : 25px 25px 15px 25px;
         }
+
         .checkbox-column label {
-            display: block;
-            white-space: nowrap;
-            margin-bottom: 5px;
+            display          : block;
+            white-space      : nowrap;
+            margin-bottom    : 5px;
         }
+
         .divider {
-            border-top: 1px solid #fff;
-            margin: 20px 0;
+            border-top       : 1px solid white;
+            margin           : 20px 0;
         }
+
         .hidden {
-            display: none;
+            display          : none;
         }
+
         .version-info {
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            margin: 10px;
-            font-size: small;
+            position         : fixed;
+            bottom           : 0;
+            right            : 0;
+            margin           : 10px;
+            font-size        : small;
         }
+
         .version-info a.update {
-            color: yellow;
-            font-weight: bold;
+            color            : yellow;
+            font-weight      : bold;
         }
-        .version-info a.version-link, 
+
+        .version-info a.version-link,
         .version-info a.version-link:visited,
         .version-info a.version-link:hover,
         .version-info a.version-link:active {
-            color: white;
-            text-decoration: none;
+            color            : white;
+            text-decoration  : none;
         }
-       <?php
-            //Conditionally add message CSS
+
+        <?php
+            // Conditionally add message CSS
             if ($message_text) {
         ?>
 
         .message {
-            background-color: <?= $message_color; ?>;
-            color: #fff;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            transition: opacity 2s ease-out;
-            box-shadow: 0 8px 8px 1px rgba(0, 0, 0, .2);
-            font-weight: bold;
+            background-color : <?= $message_color; ?>;
+            color            : white;
+            padding          : 10px;
+            border-radius    : 5px;
+            margin-bottom    : 10px;
+            transition       : opacity 2s ease-out;
+            box-shadow       : 0 8px 8px 1px rgba(0, 0, 0, .2);
+            font-weight      : bold;
         }
+
         .fade-out {
-            opacity: 0;
+            opacity          : 0;
         }
+
         <?php 
             }
 
@@ -513,50 +531,61 @@ $backup_folders = get_backup_folders(__DIR__);
         ?>
 
         table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+            width            : 100%;
+            border-collapse  : collapse;
+            margin-top       : 20px;
         }
+
         table th, table td {
-            border: 1px solid #fff;
-            padding: 10px;
-            color: #000;
-            white-space: nowrap;
+            border           : 1px solid white;
+            padding          : 10px;
+            color            : black;
+            white-space      : nowrap;
         }
+
         table th {
-            background-color: #007bff;
-            color: #fff;
-            height: 38px
+            background-color : #007bff;
+            color            : white;
+            height           : 38px;
         }
+
         table tr:nth-child(even) {
-            background-color: snow;
+            background-color : snow;
         }
+
         table tr:nth-child(odd) {
-            background-color: lightgray;
+            background-color : lightgray;
         }
+
         table th:nth-child(1), table td:nth-child(1) {
-            min-width: 54px;
+            min-width        : 54px;
         }
+
         table th:nth-child(2), table th:nth-child(3), table th:nth-child(4),
         table td:nth-child(2), table td:nth-child(3), table td:nth-child(4) {
-            width: 27%;
+            width            : 27%;
         }
+
         table th:nth-child(5), table td:nth-child(5) {
-            width: 10%;
+            width            : 10%;
         }
+
         .inline-form {
-            display: inline;
+            display          : inline;
         }
+
         .trash-icon {
-            cursor: pointer;
-            background: none;
-            border: none;
-            color: #dc3545;
-            font-size: 16px;
+            cursor           : pointer;
+            background       : none;
+            border           : none;
+            color            : #dc3545;
+            font-size        : 16px;
         }
+
         .trash-icon:hover {
-            color: #c82333;
+            color            : #c82333;
         }
+
         <?php } ?>
 
     </style>

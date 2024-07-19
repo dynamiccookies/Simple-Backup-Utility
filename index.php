@@ -384,10 +384,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Set $backup_folders after folder backup or delete
 $backup_folders = get_backup_folders(__DIR__);
-/******************************************************************************/
-?>
 
+/******************************************************************************/
+
+/**
+ * Begin HTML section
+ */
+
+?>
 <!DOCTYPE html>
+<!--
+    Name    : Simple Backup Utility
+    Repo    : https://github.com/dynamiccookies/Simple-Backup-Utility
+    License : MIT
+    Version : <?= CURRENT_VERSION ?>
+-->
 <html lang='en'>
 <head>
     <meta charset='UTF-8'>
@@ -779,11 +790,5 @@ $backup_folders = get_backup_folders(__DIR__);
 
     <!-- Display version information -->
     <div class='version-info'><?= $version_message; ?></div>
-    
-    <!--
-    Simple Backup Utility
-    Repository: https://github.com/dynamiccookies/Simple-Backup-Utility
-    License: MIT
-    -->
 </body>
 </html>

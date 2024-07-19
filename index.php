@@ -526,7 +526,7 @@ $backup_folders = get_backup_folders(__DIR__);
         table th {
             background-color: #007bff;
             color: #fff;
-            height: 38px
+            height: 38px;
         }
         table tr:nth-child(even) {
             background-color: snow;

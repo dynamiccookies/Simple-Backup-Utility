@@ -395,8 +395,8 @@ $backup_folders = get_backup_folders(__DIR__);
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css'>
     <style>
         body {
-            background-color : #000;
-            color            : #fff;
+            background-color : black;
+            color            : white;
             font-family      : Arial, sans-serif;
             text-align       : center;
         }
@@ -405,14 +405,14 @@ $backup_folders = get_backup_folders(__DIR__);
             max-width        : 90%;
             margin           : 20px auto;
             padding          : 20px;
-            border           : 2px solid #fff;
+            border           : 2px solid white;
             border-radius    : 10px;
             background-color : <?= $random_color; ?>;
             display          : inline-block;
         }
 
         h1, h2 {
-            color            : #fff;
+            color            : white;
         }
 
         form {
@@ -425,7 +425,7 @@ $backup_folders = get_backup_folders(__DIR__);
         input[type='text'] {
             padding          : 8px;
             font-size        : 16px;
-            border           : 1px solid #ccc;
+            border           : 1px solid lightgray;
             border-radius    : 5px;
             width            : 75%;
             box-sizing       : border-box;
@@ -452,7 +452,7 @@ $backup_folders = get_backup_folders(__DIR__);
             border-radius    : 5px;
             cursor           : pointer;
             background-color : #007bff;
-            color            : #fff;
+            color            : white;
             transition       : background-color 0.3s ease;
         }
 
@@ -474,7 +474,7 @@ $backup_folders = get_backup_folders(__DIR__);
         }
 
         .divider {
-            border-top       : 1px solid #fff;
+            border-top       : 1px solid white;
             margin           : 20px 0;
         }
 
@@ -510,7 +510,7 @@ $backup_folders = get_backup_folders(__DIR__);
 
         .message {
             background-color : <?= $message_color; ?>;
-            color            : #fff;
+            color            : white;
             padding          : 10px;
             border-radius    : 5px;
             margin-bottom    : 10px;
@@ -537,15 +537,15 @@ $backup_folders = get_backup_folders(__DIR__);
         }
 
         table th, table td {
-            border           : 1px solid #fff;
+            border           : 1px solid white;
             padding          : 10px;
-            color            : #000;
+            color            : black;
             white-space      : nowrap;
         }
 
         table th {
             background-color : #007bff;
-            color            : #fff;
+            color            : white;
             height           : 38px;
         }
 

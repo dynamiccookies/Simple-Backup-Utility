@@ -728,7 +728,7 @@ $backup_folders = get_backup_folders(__DIR__);
 
         <!-- Backup form for creating new backups -->
         <form method='POST'>
-            <input type='text' id='folder_name' name='folder_name' placeholder='Backup Name' required>
+            <input type='text' id='folder_name' name='folder_name' placeholder='Backup Description' required>
             <div class='checkbox-columns'>
                 <?= print_columns($sibling_folders); ?>
             </div>
@@ -756,7 +756,7 @@ $backup_folders = get_backup_folders(__DIR__);
                         <i class='fa fa-trash'></i>
                     </button>
                 </th>
-                <th>Name</th>
+                <th>Folder</th>
                 <th>Description</th>
                 <th>Created Date</th>
                 <th>Delete</th>

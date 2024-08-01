@@ -362,7 +362,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             )
         );
 
-        // Download the release and save the zip file to disk
+        // Download the new file from the release and overwrite this file
         file_put_contents(
             basename(__FILE__), 
             file_get_contents(

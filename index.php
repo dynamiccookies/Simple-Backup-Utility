@@ -300,7 +300,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if ($file_count > 0) {
 
                         // If $message_color is not already $red, set to $green
-                        if (message_color != $red) {
+                        if ($message_color != $red) {
                             $message_color = $green;
                         }
                         
@@ -334,7 +334,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (delete_backup_folder(__DIR__ . '/' . $dir)) {
 
                 // If $message_color is not already $red, set to $green
-                if (message_color != $red) {
+                if ($message_color != $red) {
                     $message_color = $green;
                 }
 

@@ -4,7 +4,7 @@
  * Define constant for the current version
  */
 
-define('CURRENT_VERSION', 'v1.2.2');
+define('CURRENT_VERSION', 'v1.2.3');
 
 /******************************************************************************/
 
@@ -300,7 +300,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if ($file_count > 0) {
 
                         // If $message_color is not already $red, set to $green
-                        if (message_color != $red) {
+                        if ($message_color != $red) {
                             $message_color = $green;
                         }
                         
@@ -334,7 +334,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (delete_backup_folder(__DIR__ . '/' . $dir)) {
 
                 // If $message_color is not already $red, set to $green
-                if (message_color != $red) {
+                if ($message_color != $red) {
                     $message_color = $green;
                 }
 
@@ -362,7 +362,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             )
         );
 
-        // Download the release and save the zip file to disk
+        // Download the new file from the release and overwrite this file
         file_put_contents(
             basename(__FILE__), 
             file_get_contents(
@@ -384,10 +384,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Set $backup_folders after folder backup or delete
 $backup_folders = get_backup_folders(__DIR__);
-/******************************************************************************/
-?>
 
+/******************************************************************************/
+
+/**
+ * Begin HTML section
+ */
+
+?>
 <!DOCTYPE html>
+<!--
+    Name    : Simple Backup Utility
+    Repo    : https://github.com/dynamiccookies/Simple-Backup-Utility
+    License : MIT
+    Version : <?= CURRENT_VERSION ?>
+-->
 <html lang='en'>
 <head>
     <meta charset='UTF-8'>
@@ -717,7 +728,7 @@ $backup_folders = get_backup_folders(__DIR__);
 
         <!-- Backup form for creating new backups -->
         <form method='POST'>
-            <input type='text' id='folder_name' name='folder_name' placeholder='Backup Name' required>
+            <input type='text' id='folder_name' name='folder_name' placeholder='Backup Description' required>
             <div class='checkbox-columns'>
                 <?= print_columns($sibling_folders); ?>
             </div>
@@ -745,7 +756,7 @@ $backup_folders = get_backup_folders(__DIR__);
                         <i class='fa fa-trash'></i>
                     </button>
                 </th>
-                <th>Name</th>
+                <th>Folder</th>
                 <th>Description</th>
                 <th>Created Date</th>
                 <th>Delete</th>
@@ -779,11 +790,5 @@ $backup_folders = get_backup_folders(__DIR__);
 
     <!-- Display version information -->
     <div class='version-info'><?= $version_message; ?></div>
-    
-    <!--
-    Simple Backup Utility
-    Repository: https://github.com/dynamiccookies/Simple-Backup-Utility
-    License: MIT
-    -->
 </body>
 </html>

@@ -866,6 +866,7 @@ $pagination     = get_paginated_data($backup_folders, $page, $per_page);
 
         </table>
 
+        <?php if ($backup_folders > 5) { ?>
         <div class='pagination-container'>
             <div class='record-count'>
                 Showing <?= $pagination['start']; ?> - <?= $pagination['end']; ?> of <?= $pagination['count']; ?>
@@ -885,7 +886,7 @@ $pagination     = get_paginated_data($backup_folders, $page, $per_page);
             </div>
         </div>
 
-        <?php } ?>
+        <?php }} ?>
 
     </div>
 

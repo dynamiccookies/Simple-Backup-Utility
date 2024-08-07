@@ -4,7 +4,7 @@
  * Define constant for the current version
  */
 
-define('CURRENT_VERSION', 'v1.2.3');
+define('CURRENT_VERSION', 'v1.3.0');
 
 /******************************************************************************/
 
@@ -30,6 +30,8 @@ $latest_version  = get_latest_release(
 );
 $message_color   = '';
 $message_text    = '';
+$page            = isset($_GET['page'])     ? (int)$_GET['page']     : 1;
+$per_page        = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 5;
 $random_color    = $colors[array_rand($colors)];
 $red             = '#dc3545';
 $release_url     = 'https://github.com/dynamiccookies/Simple-Backup-Utility/releases/tag/'
@@ -198,6 +200,39 @@ function get_sibling_folders($dir) {
     });
 
     return $folder_names;
+}
+
+/**
+ * Retrieves a paginated subset of backup folders.
+ *
+ * @param array $backup_folders Array of backup folders.
+ * @param int   $page           The current page number.
+ * @param int   $per_page       The number of items per page.
+ *
+ * @return array An associative array containing:
+ *               - 'data'        : The paginated subset of backup folders.
+ *               - 'count'       : The total number of backup folders.
+ *               - 'start'       : The starting index of the current page (1-indexed).
+ *               - 'end'         : The ending index of the current page.
+ *               - 'per_page'    : The number of items per page.
+ *               - 'current_page': The current page number.
+ *               - 'total_pages' : The total number of pages.
+ */
+
+function get_paginated_data($backup_folders, $page, $per_page) {
+    $count = count($backup_folders);
+    $start = ($page - 1) * $per_page;
+    $end   = min($count, $start + $per_page);
+
+    return [
+        'data'         => array_slice($backup_folders, $start, $per_page),
+        'count'        => $count,
+        'start'        => $start + 1,
+        'end'          => $end,
+        'per_page'     => $per_page,
+        'current_page' => $page,
+        'total_pages'  => ceil($count / $per_page)
+    ];
 }
 
 /**
@@ -382,8 +417,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Set $backup_folders after folder backup or delete
+// Set $backup_folders and $pagination after folder backup or delete
 $backup_folders = get_backup_folders(__DIR__);
+$pagination     = get_paginated_data($backup_folders, $page, $per_page);
 
 /******************************************************************************/
 
@@ -398,6 +434,7 @@ $backup_folders = get_backup_folders(__DIR__);
     Repo    : https://github.com/dynamiccookies/Simple-Backup-Utility
     License : MIT
     Version : <?= CURRENT_VERSION ?>
+
 -->
 <html lang='en'>
 <head>
@@ -599,6 +636,40 @@ $backup_folders = get_backup_folders(__DIR__);
 
         <?php } ?>
 
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .record-count {
+            font-size: 14px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+        }
+
+        .pagination-controls select {
+            margin-right: 10px;
+        }
+
+        .pagination-controls button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin: 0 2px;
+        }
+
+        .pagination-controls button.disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+
     </style>
     <script>
         // Set container's min-width based on the content's width
@@ -720,6 +791,16 @@ $backup_folders = get_backup_folders(__DIR__);
         }, 10000);
         <?php } ?>
 
+        function changePage(page) {
+            let perPage = document.getElementById('perPageSelect').value;
+            window.location.href = `?page=${page}&per_page=${perPage}`;
+        }
+
+        function changePerPage() {
+            let perPage = document.getElementById('perPageSelect').value;
+            window.location.href = `?page=1&per_page=${perPage}`;
+        }
+
     </script>
 </head>
 <body>
@@ -762,7 +843,7 @@ $backup_folders = get_backup_folders(__DIR__);
                 <th>Delete</th>
             </tr>
             <?php
-                foreach ($backup_folders as $index => $folder) {
+                foreach ($pagination['data'] as $index => $folder) {
                     $folder_name  = htmlspecialchars($folder['name']);
                     $created_date = htmlspecialchars($folder['created_date']);
             ?>
@@ -784,7 +865,31 @@ $backup_folders = get_backup_folders(__DIR__);
             <?php } ?>
 
         </table>
-        <?php } ?>
+
+        <?php if (count($backup_folders) > 5) { ?>
+        <div class='pagination-container'>
+            <div class='record-count'>
+                Showing <?= $pagination['start']; ?> - <?= $pagination['end']; ?> of <?= $pagination['count']; ?>
+            </div>
+            <div class='pagination-controls'>
+                <select id='perPageSelect' onchange='changePerPage()'>
+                    <option value='5' <?= $pagination['per_page'] == 5 ? 'selected' : ''; ?>>5</option>
+                    <option value='10' <?= $pagination['per_page'] == 10 ? 'selected' : ''; ?>>10</option>
+                    <?php if (count($backup_folders) > 10) { ?>
+                    <option value='25' <?= $pagination['per_page'] == 25 ? 'selected' : ''; ?>>25</option>
+                    <?php } if (count($backup_folders) > 25) { ?>
+                    <option value='50' <?= $pagination['per_page'] == 50 ? 'selected' : ''; ?>>50</option>
+                    <?php } ?>
+                </select>
+                <button onclick='changePage(<?= $pagination['current_page'] != 1 ? $pagination['current_page'] - 1 : 1; ?>)' <?= $pagination['current_page'] == 1 ? 'class="disabled"' : ''; ?>>&lt;</button>
+                <?php for ($i = 1; $i <= $pagination['total_pages']; $i++) { ?>
+                    <button onclick='changePage(<?= $i; ?>)' <?= $pagination['current_page'] == $i ? 'class="disabled"' : ''; ?>><?= $i; ?></button>
+                <?php } ?>
+                <button onclick='changePage(<?= $pagination['current_page'] != $pagination['total_pages'] ? $pagination['current_page'] + 1 : $pagination['total_pages']; ?>)' <?= $pagination['current_page'] == $pagination['total_pages'] ? 'class="disabled"' : ''; ?>>&gt;</button>
+            </div>
+        </div>
+
+        <?php }} ?>
 
     </div>
 

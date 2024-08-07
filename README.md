@@ -9,12 +9,10 @@ Simple Backup Utility is a PHP script that allows you to create and manage backu
 
 ## Features
 
-- **Backup Creation**: Easily create backups of specific folders.
-- **Multiple Folder Backup**: Select and backup multiple folders simultaneously.
-- **Backup Deletion**: Remove individual existing backup folders.
-- **Multiple Backup Deletion**: Select and delete multiple folders simultaneously.
-- **User-Friendly Interface**: Intuitive web interface for straightforward operation.
+- **Backup Folders**: Select one or more folders to backup.
+- **Delete Backups**: Select one or more backups to delete.
 - **Easy Update**: Built-in update feature for seamless updates to the latest version.
+- **User-Friendly Interface**: Intuitive web interface for straightforward operation.
 
 ## Requirements
 

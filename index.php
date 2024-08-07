@@ -866,22 +866,22 @@ $pagination     = get_paginated_data($backup_folders, $page, $per_page);
 
         </table>
 
-        <div class="pagination-container">
-            <div class="record-count">
+        <div class='pagination-container'>
+            <div class='record-count'>
                 Showing <?= $pagination['start']; ?> - <?= $pagination['end']; ?> of <?= $pagination['count']; ?>
             </div>
-            <div class="pagination-controls">
-                <select id="perPageSelect" onchange="changePerPage()">
-                    <option value="5" <?= $pagination['per_page'] == 5 ? 'selected' : ''; ?>>5</option>
-                    <option value="10" <?= $pagination['per_page'] == 10 ? 'selected' : ''; ?>>10</option>
-                    <option value="25" <?= $pagination['per_page'] == 25 ? 'selected' : ''; ?>>25</option>
-                    <option value="50" <?= $pagination['per_page'] == 50 ? 'selected' : ''; ?>>50</option>
+            <div class='pagination-controls'>
+                <select id='perPageSelect' onchange='changePerPage()'>
+                    <option value='5' <?= $pagination['per_page'] == 5 ? 'selected' : ''; ?>>5</option>
+                    <option value='10' <?= $pagination['per_page'] == 10 ? 'selected' : ''; ?>>10</option>
+                    <option value='25' <?= $pagination['per_page'] == 25 ? 'selected' : ''; ?>>25</option>
+                    <option value='50' <?= $pagination['per_page'] == 50 ? 'selected' : ''; ?>>50</option>
                 </select>
-                <button onclick="changePage(<?= $pagination['current_page'] != 1 ? $pagination['current_page'] - 1 : 1; ?>)" <?= $pagination['current_page'] == 1 ? 'class="disabled"' : ''; ?>>&lt;</button>
+                <button onclick='changePage(<?= $pagination['current_page'] != 1 ? $pagination['current_page'] - 1 : 1; ?>)' <?= $pagination['current_page'] == 1 ? 'class="disabled"' : ''; ?>>&lt;</button>
                 <?php for ($i = 1; $i <= $pagination['total_pages']; $i++) { ?>
-                    <button onclick="changePage(<?= $i; ?>)" <?= $pagination['current_page'] == $i ? 'class="disabled"' : ''; ?>><?= $i; ?></button>
+                    <button onclick='changePage(<?= $i; ?>)' <?= $pagination['current_page'] == $i ? 'class="disabled"' : ''; ?>><?= $i; ?></button>
                 <?php } ?>
-                <button onclick="changePage(<?= $pagination['current_page'] != $pagination['total_pages'] ? $pagination['current_page'] + 1 : $pagination['total_pages']; ?>)" <?= $pagination['current_page'] == $pagination['total_pages'] ? 'class="disabled"' : ''; ?>>&gt;</button>
+                <button onclick='changePage(<?= $pagination['current_page'] != $pagination['total_pages'] ? $pagination['current_page'] + 1 : $pagination['total_pages']; ?>)' <?= $pagination['current_page'] == $pagination['total_pages'] ? 'class="disabled"' : ''; ?>>&gt;</button>
             </div>
         </div>
 

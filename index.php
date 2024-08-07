@@ -875,8 +875,11 @@ $pagination     = get_paginated_data($backup_folders, $page, $per_page);
                 <select id='perPageSelect' onchange='changePerPage()'>
                     <option value='5' <?= $pagination['per_page'] == 5 ? 'selected' : ''; ?>>5</option>
                     <option value='10' <?= $pagination['per_page'] == 10 ? 'selected' : ''; ?>>10</option>
+                    <?php if (count($backup_folders) > 10) { ?>
                     <option value='25' <?= $pagination['per_page'] == 25 ? 'selected' : ''; ?>>25</option>
+                    <?php } if (count($backup_folders) > 25) { ?>
                     <option value='50' <?= $pagination['per_page'] == 50 ? 'selected' : ''; ?>>50</option>
+                    <?php } ?>
                 </select>
                 <button onclick='changePage(<?= $pagination['current_page'] != 1 ? $pagination['current_page'] - 1 : 1; ?>)' <?= $pagination['current_page'] == 1 ? 'class="disabled"' : ''; ?>>&lt;</button>
                 <?php for ($i = 1; $i <= $pagination['total_pages']; $i++) { ?>

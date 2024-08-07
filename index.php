@@ -4,7 +4,7 @@
  * Define constant for the current version
  */
 
-define('CURRENT_VERSION', 'v1.2.3');
+define('CURRENT_VERSION', 'v1.3.0');
 
 /******************************************************************************/
 
